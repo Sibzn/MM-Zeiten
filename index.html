@@ -1,358 +1,865 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Montagezeiten Pilot</title>
-  <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#0f172a">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tracking Montagezeiten pro MM</title>
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="./manifest.webmanifest" />
   <style>
-    :root{--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--pri:#0f766e;--pri2:#0f172a;--red:#b91c1c;}
-    *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:980px;margin:0 auto;padding:18px}
-    .grid{display:grid;grid-template-columns:1fr;gap:16px}
-    @media(min-width:960px){.grid{grid-template-columns:380px 1fr}}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-    h1,h2{margin:0 0 12px 0} h1{font-size:24px} h2{font-size:18px}
-    .sub{font-size:14px;color:var(--muted);line-height:1.4}
-    .btn{appearance:none;border:1px solid transparent;background:var(--pri);color:#fff;border-radius:12px;padding:12px 14px;font-weight:600;cursor:pointer}
-    .btn.secondary{background:#475569}.btn.outline{background:#fff;color:var(--text);border-color:var(--line)}
-    .btn:disabled{opacity:.55;cursor:not-allowed}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .grow{flex:1}
-    #reader{width:100%;overflow:hidden;border-radius:12px;background:#000}
-    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;font-size:12px}
-    .status{padding:10px 12px;border-radius:12px;background:#f1f5f9;font-size:14px}
-    .status.error{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
-    .actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
-    .field{display:flex;flex-direction:column;gap:8px}
-    input[type=password]{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:14px}
-    table{width:100%;border-collapse:collapse;font-size:14px}
-    th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-    th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
-    .hidden{display:none}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #0f172a;
+      --primary-text: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-text: #0f172a;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+      --danger-text: #b91c1c;
+      --ok-bg: #f1f5f9;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 18px 0 18px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .card-subheader {
+      padding: 18px 18px 0 18px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .card-content {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .info-box, .message-box, .error-box {
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .message-box {
+      background: var(--ok-bg);
+    }
+
+    .error-box {
+      background: var(--danger-bg);
+      border-color: var(--danger-border);
+      color: var(--danger-text);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: white;
+      color: var(--text);
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: var(--primary-text);
+      border-color: var(--primary);
+    }
+
+    button.secondary {
+      background: var(--secondary);
+      color: var(--secondary-text);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+    }
+
+    #qr-reader {
+      width: 100%;
+      min-height: 260px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid var(--border);
+      display: none;
+    }
+
+    #qr-reader.active {
+      display: block;
+    }
+
+    .label {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 700;
+      background: #fff;
+    }
+
+    .badge.start {
+      background: #0f172a;
+      color: white;
+      border-color: #0f172a;
+    }
+
+    .badge.ende {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 960px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="grid">
-    <div>
+  <div class="page">
+    <div class="col">
       <div class="card">
-        <h1>Montagezeiten Pilot</h1>
-        <div class="sub">Module werden aus <span class="mono">module.csv</span> geladen. In der Datei reicht eine Spalte mit Modul-IDs. QR-Code scannen, dann Start / Pause / Ende buchen.</div>
-        <div style="height:12px"></div>
-        <div id="moduleStatus" class="status">Module werden geladen …</div>
-        <div style="height:12px"></div>
-        <div class="row">
-          <button id="startScanBtn" class="btn grow">Kamera starten / QR-Code scannen</button>
-          <button id="stopScanBtn" class="btn secondary hidden grow">Kamera stoppen</button>
-          <button id="resetBtn" class="btn outline">Reset</button>
+        <div class="card-header">Tracking Montagezeiten pro MM</div>
+        <div class="card-content">
+          <div class="info-box">
+            QR-Code scannen und danach <strong>Start</strong> oder <strong>Ende</strong> klicken.
+          </div>
+
+          <div class="info-box">
+            Status Module: <span id="modules-status">wird geladen ...</span>
+          </div>
+
+          <div class="button-row">
+            <button id="start-camera-btn" class="primary">Kamera starten / QR-Code scannen</button>
+            <button id="stop-camera-btn" class="secondary hidden">Kamera stoppen</button>
+            <button id="reset-btn">Reset</button>
+          </div>
+
+          <div id="qr-reader"></div>
+
+          <div class="card" style="box-shadow:none;">
+            <div class="card-content">
+              <div class="label" style="font-weight:700; color:#0f172a;">Datenansicht</div>
+              <div id="data-lock-section">
+                <input id="password-input" type="password" placeholder="Passwort eingeben" />
+                <button id="show-data-btn" class="primary" style="width:100%;">Daten anzeigen</button>
+                <div id="password-error" class="muted" style="color:#b91c1c;"></div>
+              </div>
+              <div id="data-unlock-section" class="hidden">
+                <div class="muted">Datenansicht ist freigeschaltet.</div>
+                <button id="hide-data-btn">Daten verbergen</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="camera-error" class="error-box hidden"></div>
+          <div id="message-box" class="message-box hidden"></div>
         </div>
-        <div style="height:12px"></div>
-        <div id="reader" class="hidden"></div>
-        <div style="height:12px"></div>
-        <div id="message" class="status">Bereit.</div>
-        <div id="cameraError" class="status error hidden"></div>
       </div>
 
-      <div class="card" style="margin-top:16px">
-        <h2>Datenansicht</h2>
-        <div class="field">
-          <input id="pw" type="password" placeholder="Passwort eingeben" />
-          <button id="showDataBtn" class="btn outline">Daten anzeigen</button>
-          <button id="hideDataBtn" class="btn outline hidden">Daten verbergen</button>
-          <div id="pwError" class="sub" style="color:#b91c1c"></div>
+      <div class="card">
+        <div class="card-subheader">Erkanntes Modul</div>
+        <div class="card-content" id="selected-module-box">
+          <div class="muted">Noch kein Modul gescannt.</div>
         </div>
       </div>
 
-      <div class="card" style="margin-top:16px">
-        <h2>Erkanntes Modul</h2>
-        <div id="selectedBox" class="sub">Noch kein Modul gescannt.</div>
-        <div id="actionButtons" class="actions"></div>
-      </div>
-
-      <div class="card" style="margin-top:16px">
-        <h2>Aktive Module</h2>
-        <div id="activeModules" class="sub">Aktuell kein Modul offen.</div>
+      <div class="card">
+        <div class="card-subheader">Aktives Modul</div>
+        <div class="card-content" id="active-module-box">
+          <div class="muted">Aktuell kein Modul offen.</div>
+        </div>
       </div>
     </div>
 
-    <div>
-      <div id="dataHiddenCard" class="card">
-        <h2>Daten sind verborgen</h2>
-        <div class="sub">Buchungsjournal und Auswertung werden erst nach korrekter Passworteingabe angezeigt.</div>
+    <div class="col">
+      <div id="data-hidden-card" class="card">
+        <div class="card-subheader">Daten sind verborgen</div>
+        <div class="card-content">
+          <div class="muted">Die Buchungen und die Auswertung werden erst nach korrekter Passworteingabe angezeigt.</div>
+        </div>
       </div>
 
-      <div id="dataArea" class="hidden">
+      <div id="data-visible-section" class="hidden">
         <div class="card">
-          <div class="row" style="justify-content:space-between;align-items:center">
-            <h2>Buchungsjournal</h2>
-            <div class="row">
-              <button id="copyBtn" class="btn outline">Für Excel kopieren</button>
-              <button id="csvBtn" class="btn outline">CSV exportieren</button>
-            </div>
+          <div class="card-subheader" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span>Buchungsjournal</span>
+            <span class="button-row">
+              <button id="copy-excel-btn">Für Excel kopieren</button>
+              <button id="export-csv-btn">CSV exportieren</button>
+            </span>
           </div>
-          <div style="overflow:auto">
+          <div class="card-content">
             <table>
-              <thead><tr><th>ID</th><th>Zeit</th><th>Modul</th><th>Aktion</th></tr></thead>
-              <tbody id="journalBody"><tr><td colspan="4" class="sub">Noch keine Buchungen vorhanden.</td></tr></tbody>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Zeit</th>
+                  <th>Modul</th>
+                  <th>Aktion</th>
+                </tr>
+              </thead>
+              <tbody id="journal-body">
+                <tr><td colspan="4" class="muted">Noch keine Buchungen vorhanden.</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
 
-        <div class="card" style="margin-top:16px">
-          <h2>Auswertung je Modul</h2>
-          <div style="overflow:auto">
+        <div class="card">
+          <div class="card-subheader">Auswertung je Modul</div>
+          <div class="card-content">
             <table>
-              <thead><tr><th>Modul</th><th>Projekt</th><th>Gesamtzeit</th></tr></thead>
-              <tbody id="totalsBody"><tr><td colspan="3" class="sub">Noch keine auswertbaren Intervalle vorhanden.</td></tr></tbody>
+              <thead>
+                <tr>
+                  <th>Modul</th>
+                  <th>Projekt</th>
+                  <th>Gesamtzeit</th>
+                </tr>
+              </thead>
+              <tbody id="summary-body">
+                <tr><td colspan="3" class="muted">Noch keine auswertbaren Intervalle vorhanden.</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script src="https://unpkg.com/html5-qrcode" defer></script>
-<script>
-const PASSWORD = "PRM-WSA";
-let modules = [];
-let selectedModule = null;
-let scanner = null;
-let events = [];
-try { events = JSON.parse(localStorage.getItem('montagezeiten-events') || '[]'); } catch(e) {}
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script>
+    const PASSWORD = 'PRM-WSA';
+    const MODULE_CSV_PATH = './module.csv';
+    const STORAGE_KEY_EVENTS = 'montagezeiten-events';
 
-const els = {
-  moduleStatus: document.getElementById('moduleStatus'),
-  startScanBtn: document.getElementById('startScanBtn'),
-  stopScanBtn: document.getElementById('stopScanBtn'),
-  resetBtn: document.getElementById('resetBtn'),
-  message: document.getElementById('message'),
-  cameraError: document.getElementById('cameraError'),
-  reader: document.getElementById('reader'),
-  pw: document.getElementById('pw'),
-  pwError: document.getElementById('pwError'),
-  showDataBtn: document.getElementById('showDataBtn'),
-  hideDataBtn: document.getElementById('hideDataBtn'),
-  dataArea: document.getElementById('dataArea'),
-  dataHiddenCard: document.getElementById('dataHiddenCard'),
-  selectedBox: document.getElementById('selectedBox'),
-  actionButtons: document.getElementById('actionButtons'),
-  activeModules: document.getElementById('activeModules'),
-  journalBody: document.getElementById('journalBody'),
-  totalsBody: document.getElementById('totalsBody'),
-  copyBtn: document.getElementById('copyBtn'),
-  csvBtn: document.getElementById('csvBtn')
-};
+    let modules = [];
+    let events = [];
+    let selectedModule = null;
+    let scannerActive = false;
+    let scannerInstance = null;
+    let scannerBusy = false;
+    let dataUnlocked = false;
 
-function saveEvents(){ localStorage.setItem('montagezeiten-events', JSON.stringify(events)); }
-function setMessage(msg){ els.message.textContent = msg; }
-function setError(msg){ els.cameraError.textContent = msg; els.cameraError.classList.toggle('hidden', !msg); }
-function formatDate(iso){ return new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date(iso)); }
-function allowedActions(last){ if(!last) return ['Start']; if(last==='Start') return ['Pause','Ende']; return ['Start']; }
-function toCsv(rows){
-  const header=['BuchungsID','Zeitstempel','Projekt','ModulID','Modulname','Aktion','Kommentar'];
-  const all=[header,...rows.map(r=>[r.buchungsId,r.zeitstempel,r.projekt,r.modulId,r.modulname,r.aktion,r.kommentar||''])];
-  return all.map(line=>line.map(v=>`"${String(v).replaceAll('"','""')}"`).join(';')).join('\n');
-}
-function toTsv(rows){
-  const header=['BuchungsID','Zeitstempel','Projekt','ModulID','Modulname','Aktion','Kommentar'];
-  const all=[header,...rows.map(r=>[r.buchungsId,r.zeitstempel,r.projekt,r.modulId,r.modulname,r.aktion,r.kommentar||''])];
-  return all.map(line=>line.map(v=>String(v).replaceAll('\t',' ')).join('\t')).join('\n');
-}
-function normalizeModulesFromCsv(text){
-  const rows=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
-  if(!rows.length) return [];
-  let start=0;
-  if(['modul','modulid','module','modul_id'].includes(rows[0].toLowerCase())) start=1;
-  return rows.slice(start).map(line=>{
-    const parts=line.split(/[;,\t]/).map(x=>x.trim());
-    const modulId=(parts[0]||'').toUpperCase();
-    const modulname=parts[1]||modulId;
-    const projekt=parts[2]||'Pilot_01';
-    return {modulId, modulname, projekt, baugruppe: parts[3]||''};
-  }).filter(x=>x.modulId);
-}
-async function loadModules(){
-  try{
-    const res = await fetch('./module.csv', {cache:'no-store'});
-    if(!res.ok) throw new Error();
-    const text = await res.text();
-    modules = normalizeModulesFromCsv(text);
-    els.moduleStatus.textContent = modules.length + ' Module geladen';
-    els.startScanBtn.disabled = modules.length===0;
-    setMessage(modules.length ? 'Bereit.' : 'Keine Module in module.csv gefunden.');
-  }catch(e){
-    modules = [];
-    els.moduleStatus.textContent = 'module.csv konnte nicht geladen werden';
-    els.startScanBtn.disabled = true;
-    setMessage('Bitte module.csv im Repository ergänzen.');
-  }
-}
-function parseQrPayload(code){
-  const raw = String(code||'').trim();
-  const normalized = raw.toUpperCase();
-  const found = modules.find(m => m.modulId === normalized);
-  if(found) return found;
-  if(raw.includes('|')){
-    const [modulId, modulname='', projekt='Pilot_01', baugruppe=''] = raw.split('|');
-    if(modulId.trim()) return {modulId:modulId.trim().toUpperCase(), modulname:(modulname.trim()||modulId.trim().toUpperCase()), projekt:(projekt.trim()||'Pilot_01'), baugruppe:baugruppe.trim()};
-  }
-  try{
-    const p = JSON.parse(raw);
-    if(p.modulId) return {modulId:String(p.modulId).trim().toUpperCase(), modulname:String(p.modulname||p.modulId).trim(), projekt:String(p.projekt||'Pilot_01').trim(), baugruppe:String(p.baugruppe||'').trim()};
-  }catch(e){}
-  return null;
-}
-function getLastEventForModule(modulId){
-  const arr = events.filter(e => e.modulId === modulId);
-  return arr.length ? arr[arr.length-1] : null;
-}
-function applyCode(code){
-  const mod = parseQrPayload(code);
-  if(!mod){ selectedModule=null; setMessage('QR-Inhalt wurde nicht erkannt.'); render(); return; }
-  selectedModule = mod;
-  setMessage('Modul ' + mod.modulId + ' erkannt.');
-  render();
-}
-async function startScanner(){
-  if(!navigator.mediaDevices?.getUserMedia){ setError('Diese Umgebung unterstützt keinen Kamerazugriff.'); return; }
-  if(typeof Html5Qrcode === 'undefined'){ setError('Scanner-Bibliothek noch nicht geladen. Bitte erneut versuchen.'); return; }
-  try{
-    setError('');
-    if(scanner){ await stopScanner(); }
-    scanner = new Html5Qrcode("reader");
-    els.reader.classList.remove('hidden');
-    await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:220,height:220}}, decodedText => { applyCode(decodedText); stopScanner(); }, _ => {});
-    els.startScanBtn.classList.add('hidden');
-    els.stopScanBtn.classList.remove('hidden');
-    setMessage('Kamera aktiv. Bitte QR-Code vor die Kamera halten.');
-  }catch(e){
-    setError('Kamerazugriff fehlgeschlagen. Bitte Berechtigung prüfen oder HTTPS verwenden.');
-  }
-}
-async function stopScanner(){
-  try{
-    if(scanner){
-      await scanner.stop().catch(()=>{});
-      await scanner.clear().catch(()=>{});
-      scanner = null;
+    const modulesStatusEl = document.getElementById('modules-status');
+    const messageBoxEl = document.getElementById('message-box');
+    const cameraErrorEl = document.getElementById('camera-error');
+    const qrReaderEl = document.getElementById('qr-reader');
+    const selectedModuleBoxEl = document.getElementById('selected-module-box');
+    const activeModuleBoxEl = document.getElementById('active-module-box');
+    const journalBodyEl = document.getElementById('journal-body');
+    const summaryBodyEl = document.getElementById('summary-body');
+    const passwordInputEl = document.getElementById('password-input');
+    const passwordErrorEl = document.getElementById('password-error');
+    const dataHiddenCardEl = document.getElementById('data-hidden-card');
+    const dataVisibleSectionEl = document.getElementById('data-visible-section');
+    const dataLockSectionEl = document.getElementById('data-lock-section');
+    const dataUnlockSectionEl = document.getElementById('data-unlock-section');
+    const startCameraBtnEl = document.getElementById('start-camera-btn');
+    const stopCameraBtnEl = document.getElementById('stop-camera-btn');
+
+    function showMessage(text) {
+      if (!text) {
+        messageBoxEl.classList.add('hidden');
+        messageBoxEl.textContent = '';
+        return;
+      }
+      messageBoxEl.textContent = text;
+      messageBoxEl.classList.remove('hidden');
     }
-  }finally{
-    els.reader.classList.add('hidden');
-    els.stopScanBtn.classList.add('hidden');
-    els.startScanBtn.classList.remove('hidden');
-  }
-}
-function bookAction(aktion){
-  if(!selectedModule) return;
-  events.push({
-    buchungsId: events.length + 1,
-    zeitstempel: new Date().toISOString(),
-    projekt: selectedModule.projekt,
-    modulId: selectedModule.modulId,
-    modulname: selectedModule.modulname,
-    aktion,
-    kommentar:''
-  });
-  saveEvents();
-  setMessage(aktion + ' für ' + selectedModule.modulId + ' gespeichert.');
-  render();
-}
-function renderSelected(){
-  if(!selectedModule){ els.selectedBox.innerHTML='<div class="sub">Noch kein Modul gescannt.</div>'; els.actionButtons.innerHTML=''; return; }
-  const last = getLastEventForModule(selectedModule.modulId);
-  els.selectedBox.innerHTML = `
-    <div><strong>${selectedModule.modulname}</strong></div>
-    <div class="sub">${selectedModule.modulId}</div>
-    <div class="sub">Projekt: ${selectedModule.projekt || '-'}</div>
-    <div class="sub">Baugruppe: ${selectedModule.baugruppe || '-'}</div>
-    <div class="sub">Letzte Aktion: ${last ? last.aktion : 'keine'}</div>
-  `;
-  const actions = allowedActions(last?.aktion);
-  els.actionButtons.innerHTML='';
-  actions.forEach(a=>{
-    const btn=document.createElement('button');
-    btn.className='btn'+(a==='Pause'?' secondary':a==='Ende'?' outline':'');
-    btn.textContent=a;
-    btn.onclick=()=>bookAction(a);
-    els.actionButtons.appendChild(btn);
-  });
-}
-function renderActive(){
-  const map = new Map();
-  events.forEach(e=>map.set(e.modulId,e));
-  const active = [...map.values()].filter(e=>e.aktion==='Start');
-  if(!active.length){ els.activeModules.innerHTML='<div class="sub">Aktuell kein Modul offen.</div>'; return; }
-  els.activeModules.innerHTML = active.map(e=>`<div><strong>${e.modulname}</strong> <span class="sub">(${e.modulId})</span></div>`).join('');
-}
-function renderJournal(){
-  if(!events.length){ els.journalBody.innerHTML='<tr><td colspan="4" class="sub">Noch keine Buchungen vorhanden.</td></tr>'; return; }
-  els.journalBody.innerHTML = events.map(e=>`
-    <tr>
-      <td>${e.buchungsId}</td>
-      <td>${formatDate(e.zeitstempel)}</td>
-      <td><strong>${e.modulname}</strong><div class="sub">${e.modulId}</div></td>
-      <td>${e.aktion}</td>
-    </tr>`).join('');
-}
-function renderTotals(){
-  const grouped={}, openStarts={};
-  events.forEach(e=>{
-    if(!grouped[e.modulId]) grouped[e.modulId]={modulId:e.modulId,modulname:e.modulname,projekt:e.projekt,minuten:0};
-    if(e.aktion==='Start') openStarts[e.modulId]=new Date(e.zeitstempel);
-    else if((e.aktion==='Pause'||e.aktion==='Ende') && openStarts[e.modulId]){
-      grouped[e.modulId].minuten += Math.max(0, Math.round((new Date(e.zeitstempel)-openStarts[e.modulId])/60000));
-      delete openStarts[e.modulId];
+
+    function showCameraError(text) {
+      if (!text) {
+        cameraErrorEl.classList.add('hidden');
+        cameraErrorEl.textContent = '';
+        return;
+      }
+      cameraErrorEl.textContent = text;
+      cameraErrorEl.classList.remove('hidden');
     }
-  });
-  const totals = Object.values(grouped);
-  if(!totals.length){ els.totalsBody.innerHTML='<tr><td colspan="3" class="sub">Noch keine auswertbaren Intervalle vorhanden.</td></tr>'; return; }
-  els.totalsBody.innerHTML = totals.map(t=>`
-    <tr>
-      <td><strong>${t.modulname}</strong><div class="sub">${t.modulId}</div></td>
-      <td>${t.projekt}</td>
-      <td>${t.minuten} min</td>
-    </tr>`).join('');
-}
-function render(){ renderSelected(); renderActive(); renderJournal(); renderTotals(); }
 
-els.startScanBtn.onclick = startScanner;
-els.stopScanBtn.onclick = stopScanner;
-els.resetBtn.onclick = async () => { await stopScanner(); events=[]; selectedModule=null; saveEvents(); localStorage.removeItem('montagezeiten-events'); setMessage('Demo zurückgesetzt.'); render(); };
-els.showDataBtn.onclick = () => {
-  if(els.pw.value === PASSWORD){
-    els.pwError.textContent='';
-    els.dataArea.classList.remove('hidden');
-    els.dataHiddenCard.classList.add('hidden');
-    els.showDataBtn.classList.add('hidden');
-    els.hideDataBtn.classList.remove('hidden');
-    setMessage('Datenansicht freigeschaltet.');
-  } else {
-    els.pwError.textContent='Passwort falsch.';
-  }
-};
-els.hideDataBtn.onclick = () => {
-  els.dataArea.classList.add('hidden');
-  els.dataHiddenCard.classList.remove('hidden');
-  els.showDataBtn.classList.remove('hidden');
-  els.hideDataBtn.classList.add('hidden');
-  els.pw.value=''; els.pwError.textContent='';
-};
-els.copyBtn.onclick = async () => {
-  try{ await navigator.clipboard.writeText(toTsv(events)); setMessage('Tabelle für Excel in die Zwischenablage kopiert.'); }
-  catch(e){ setMessage('Kopieren fehlgeschlagen. Bitte CSV-Export verwenden.'); }
-};
-els.csvBtn.onclick = () => {
-  const blob = new Blob([toCsv(events)], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='montagezeiten_buchungen.csv'; a.click(); URL.revokeObjectURL(url);
-};
+    function formatDate(dateString) {
+      return new Intl.DateTimeFormat('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }).format(new Date(dateString));
+    }
 
-if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{})); }
-loadModules(); render();
-</script>
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function loadEvents() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_EVENTS);
+        events = raw ? JSON.parse(raw) : [];
+      } catch {
+        events = [];
+      }
+    }
+
+    function saveEvents() {
+      localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(events));
+    }
+
+    function normalizeModulesFromCsv(text) {
+      const rows = text
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
+
+      if (!rows.length) return [];
+
+      let startIndex = 0;
+      const first = rows[0].toLowerCase();
+      if (['modul', 'modulid', 'module', 'modul_id'].includes(first)) {
+        startIndex = 1;
+      }
+
+      return rows
+        .slice(startIndex)
+        .map(line => {
+          const modulId = line.split(/[;,\t]/)[0].trim().toUpperCase();
+          return modulId ? {
+            modulId,
+            modulname: modulId,
+            projekt: 'Pilot_01',
+            baugruppe: ''
+          } : null;
+        })
+        .filter(Boolean);
+    }
+
+    async function loadModules() {
+      try {
+        const response = await fetch(MODULE_CSV_PATH, { cache: 'no-store' });
+        if (!response.ok) throw new Error('module.csv nicht gefunden');
+        const text = await response.text();
+        modules = normalizeModulesFromCsv(text);
+        modulesStatusEl.textContent = `${modules.length} geladen`;
+        showMessage(modules.length ? `${modules.length} Module geladen.` : 'Keine Module in module.csv gefunden.');
+      } catch (error) {
+        modules = [];
+        modulesStatusEl.textContent = 'Fehler beim Laden';
+        showMessage('module.csv konnte nicht geladen werden.');
+      }
+    }
+
+    function getSelectedLastEvent() {
+      if (!selectedModule) return null;
+      const filtered = events.filter(e => e.modulId === selectedModule.modulId);
+      return filtered.length ? filtered[filtered.length - 1] : null;
+    }
+
+    function getActiveModuleEvent() {
+      const lastByModule = new Map();
+      for (const e of events) {
+        lastByModule.set(e.modulId, e);
+      }
+      const active = Array.from(lastByModule.values()).filter(e => e.aktion === 'Start');
+      return active.length ? active[active.length - 1] : null;
+    }
+
+    function getAllowedActions(lastAction) {
+      if (!lastAction) return ['Start'];
+      if (lastAction === 'Start') return ['Ende'];
+      if (lastAction === 'Ende') return ['Start'];
+      return ['Start'];
+    }
+
+    function parseQrPayload(code) {
+      const raw = code.trim();
+      const normalized = raw.toUpperCase();
+
+      const fromModules = modules.find(m => m.modulId === normalized);
+      if (fromModules) return fromModules;
+
+      if (raw.includes('|')) {
+        const [modulId, modulname = '', projekt = 'Pilot_01', baugruppe = ''] = raw.split('|');
+        if (modulId && modulId.trim()) {
+          return {
+            modulId: modulId.trim().toUpperCase(),
+            modulname: modulname.trim() || modulId.trim().toUpperCase(),
+            projekt: projekt.trim() || 'Pilot_01',
+            baugruppe: baugruppe.trim() || ''
+          };
+        }
+      }
+
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.modulId) {
+          return {
+            modulId: String(parsed.modulId).trim().toUpperCase(),
+            modulname: String(parsed.modulname ?? parsed.modulId).trim(),
+            projekt: String(parsed.projekt ?? 'Pilot_01').trim(),
+            baugruppe: String(parsed.baugruppe ?? '').trim()
+          };
+        }
+      } catch {}
+
+      return null;
+    }
+
+    function addEvent(modul, action, auto = false) {
+      const row = {
+        buchungsId: events.length + 1,
+        zeitstempel: new Date().toISOString(),
+        projekt: modul.projekt || 'Pilot_01',
+        modulId: modul.modulId,
+        modulname: modul.modulname || modul.modulId,
+        aktion: action,
+        kommentar: auto ? 'Automatisch beendet durch Scan eines anderen Moduls' : ''
+      };
+
+      events.push(row);
+      saveEvents();
+      return row;
+    }
+
+    function applyCode(code) {
+      const normalized = code.trim().toUpperCase();
+      if (!normalized) {
+        showMessage('Bitte einen QR-Code scannen.');
+        return;
+      }
+
+      const mod = parseQrPayload(code);
+      if (!mod) {
+        selectedModule = null;
+        renderSelectedModule();
+        showMessage(`QR-Inhalt ${normalized} wurde nicht erkannt.`);
+        return;
+      }
+
+      const activeEvent = getActiveModuleEvent();
+      if (activeEvent && activeEvent.modulId !== mod.modulId) {
+        addEvent({
+          modulId: activeEvent.modulId,
+          modulname: activeEvent.modulname,
+          projekt: activeEvent.projekt,
+          baugruppe: ''
+        }, 'Ende', true);
+        showMessage(`Vorher aktives Modul ${activeEvent.modulId} wurde automatisch beendet. Neues Modul ${mod.modulId} erkannt.`);
+      } else {
+        showMessage(`Modul ${mod.modulId} erkannt.`);
+      }
+
+      selectedModule = mod;
+      renderAll();
+    }
+
+    async function stopScanner() {
+      const instance = scannerInstance;
+      scannerInstance = null;
+
+      try {
+        if (instance) {
+          try { await instance.stop(); } catch {}
+          try { await instance.clear(); } catch {}
+        }
+      } finally {
+        scannerActive = false;
+        qrReaderEl.classList.remove('active');
+        qrReaderEl.innerHTML = '';
+        startCameraBtnEl.classList.remove('hidden');
+        stopCameraBtnEl.classList.add('hidden');
+      }
+    }
+
+    async function startScanner() {
+      if (scannerBusy) return;
+      scannerBusy = true;
+
+      try {
+        showCameraError('');
+        showMessage('');
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          showCameraError('Diese Umgebung unterstützt keinen Kamerazugriff.');
+          return;
+        }
+
+        await stopScanner();
+
+        qrReaderEl.innerHTML = '';
+        qrReaderEl.classList.add('active');
+
+        scannerInstance = new Html5Qrcode('qr-reader');
+        await scannerInstance.start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          async (decodedText) => {
+            applyCode(decodedText);
+            await stopScanner();
+          },
+          () => {}
+        );
+
+        scannerActive = true;
+        startCameraBtnEl.classList.add('hidden');
+        stopCameraBtnEl.classList.remove('hidden');
+        showMessage('Kamera aktiv. Bitte QR-Code vor die Kamera halten.');
+      } catch (error) {
+        scannerInstance = null;
+        scannerActive = false;
+        qrReaderEl.classList.remove('active');
+        showCameraError('Kamerazugriff fehlgeschlagen. Bitte Berechtigung prüfen oder HTTPS verwenden.');
+      } finally {
+        scannerBusy = false;
+      }
+    }
+
+    function bookSelectedAction(action) {
+      if (!selectedModule) return;
+      addEvent(selectedModule, action, false);
+      showMessage(`${action} für ${selectedModule.modulId} gespeichert.`);
+      renderAll();
+    }
+
+    function toCsv(rows) {
+      const header = ['BuchungsID', 'Zeitstempel', 'Projekt', 'ModulID', 'Modulname', 'Aktion', 'Kommentar'];
+      const lines = rows.map(row => [
+        row.buchungsId,
+        row.zeitstempel,
+        row.projekt,
+        row.modulId,
+        row.modulname,
+        row.aktion,
+        row.kommentar ?? ''
+      ]);
+
+      return [header, ...lines]
+        .map(line => line.map(value => `"${String(value).replaceAll('"', '""')}"`).join(';'))
+        .join('\n');
+    }
+
+    function toTsv(rows) {
+      const header = ['BuchungsID', 'Zeitstempel', 'Projekt', 'ModulID', 'Modulname', 'Aktion', 'Kommentar'];
+      const lines = rows.map(row => [
+        row.buchungsId,
+        row.zeitstempel,
+        row.projekt,
+        row.modulId,
+        row.modulname,
+        row.aktion,
+        row.kommentar ?? ''
+      ]);
+
+      return [header, ...lines]
+        .map(line => line.map(value => String(value).replaceAll('\t', ' ')).join('\t'))
+        .join('\n');
+    }
+
+    function exportCsv() {
+      if (!events.length) return;
+      const csv = toCsv(events);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'montagezeiten_buchungen.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function copyTableForExcel() {
+      if (!events.length) return;
+      try {
+        await navigator.clipboard.writeText(toTsv(events));
+        showMessage('Tabelle für Excel in die Zwischenablage kopiert.');
+      } catch {
+        showMessage('Kopieren fehlgeschlagen. Bitte CSV-Export verwenden.');
+      }
+    }
+
+    function renderSelectedModule() {
+      if (!selectedModule) {
+        selectedModuleBoxEl.innerHTML = '<div class="muted">Noch kein Modul gescannt.</div>';
+        return;
+      }
+
+      const lastEvent = getSelectedLastEvent();
+      const allowedActions = getAllowedActions(lastEvent ? lastEvent.aktion : null);
+
+      selectedModuleBoxEl.innerHTML = `
+        <div>
+          <div class="value">${escapeHtml(selectedModule.modulname)}</div>
+          <div class="muted">${escapeHtml(selectedModule.modulId)}</div>
+        </div>
+        <div class="muted">Projekt: ${escapeHtml(selectedModule.projekt || 'Pilot_01')}</div>
+        <div class="muted">Baugruppe: ${escapeHtml(selectedModule.baugruppe || '-')}</div>
+        <div class="muted">
+          Letzte Aktion:
+          ${lastEvent ? `<span class="badge ${lastEvent.aktion === 'Start' ? 'start' : 'ende'}">${escapeHtml(lastEvent.aktion)}</span>` : 'keine'}
+        </div>
+        <div class="button-row" id="selected-actions"></div>
+      `;
+
+      const actionsEl = document.getElementById('selected-actions');
+      if (allowedActions.includes('Start')) {
+        const btn = document.createElement('button');
+        btn.className = 'primary';
+        btn.textContent = 'Start';
+        btn.onclick = () => bookSelectedAction('Start');
+        actionsEl.appendChild(btn);
+      }
+
+      if (allowedActions.includes('Ende')) {
+        const btn = document.createElement('button');
+        btn.className = 'secondary';
+        btn.textContent = 'Ende';
+        btn.onclick = () => bookSelectedAction('Ende');
+        actionsEl.appendChild(btn);
+      }
+    }
+
+    function renderActiveModule() {
+      const activeEvent = getActiveModuleEvent();
+
+      if (!activeEvent) {
+        activeModuleBoxEl.innerHTML = '<div class="muted">Aktuell kein Modul offen.</div>';
+        return;
+      }
+
+      activeModuleBoxEl.innerHTML = `
+        <div>
+          <div class="value">${escapeHtml(activeEvent.modulname)}</div>
+          <div class="muted">${escapeHtml(activeEvent.modulId)}</div>
+        </div>
+        <div><span class="badge start">läuft</span></div>
+      `;
+    }
+
+    function renderJournal() {
+      if (!events.length) {
+        journalBodyEl.innerHTML = '<tr><td colspan="4" class="muted">Noch keine Buchungen vorhanden.</td></tr>';
+        return;
+      }
+
+      journalBodyEl.innerHTML = events.map(e => `
+        <tr>
+          <td>${e.buchungsId}</td>
+          <td>${formatDate(e.zeitstempel)}</td>
+          <td>
+            <div>${escapeHtml(e.modulname)}</div>
+            <div class="muted">${escapeHtml(e.modulId)}</div>
+          </td>
+          <td><span class="badge ${e.aktion === 'Start' ? 'start' : 'ende'}">${escapeHtml(e.aktion)}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderSummary() {
+      const grouped = {};
+      const openStarts = {};
+
+      for (const e of events) {
+        if (!grouped[e.modulId]) {
+          grouped[e.modulId] = {
+            modulId: e.modulId,
+            modulname: e.modulname,
+            projekt: e.projekt,
+            minuten: 0
+          };
+        }
+
+        if (e.aktion === 'Start') {
+          openStarts[e.modulId] = new Date(e.zeitstempel);
+        } else if (e.aktion === 'Ende' && openStarts[e.modulId]) {
+          const diffMs = new Date(e.zeitstempel) - openStarts[e.modulId];
+          grouped[e.modulId].minuten += Math.max(0, Math.round(diffMs / 60000));
+          delete openStarts[e.modulId];
+        }
+      }
+
+      const rows = Object.values(grouped);
+
+      if (!rows.length) {
+        summaryBodyEl.innerHTML = '<tr><td colspan="3" class="muted">Noch keine auswertbaren Intervalle vorhanden.</td></tr>';
+        return;
+      }
+
+      summaryBodyEl.innerHTML = rows.map(r => `
+        <tr>
+          <td>
+            <div>${escapeHtml(r.modulname)}</div>
+            <div class="muted">${escapeHtml(r.modulId)}</div>
+          </td>
+          <td>${escapeHtml(r.projekt)}</td>
+          <td>${r.minuten} min</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderDataVisibility() {
+      dataHiddenCardEl.classList.toggle('hidden', dataUnlocked);
+      dataVisibleSectionEl.classList.toggle('hidden', !dataUnlocked);
+      dataLockSectionEl.classList.toggle('hidden', dataUnlocked);
+      dataUnlockSectionEl.classList.toggle('hidden', !dataUnlocked);
+    }
+
+    function renderAll() {
+      renderSelectedModule();
+      renderActiveModule();
+      renderJournal();
+      renderSummary();
+      renderDataVisibility();
+    }
+
+    function resetAll() {
+      stopScanner();
+      events = [];
+      selectedModule = null;
+      dataUnlocked = false;
+      passwordInputEl.value = '';
+      passwordErrorEl.textContent = '';
+      localStorage.removeItem(STORAGE_KEY_EVENTS);
+      showMessage('Demo zurückgesetzt.');
+      renderAll();
+    }
+
+    document.getElementById('start-camera-btn').addEventListener('click', startScanner);
+    document.getElementById('stop-camera-btn').addEventListener('click', stopScanner);
+    document.getElementById('reset-btn').addEventListener('click', resetAll);
+    document.getElementById('show-data-btn').addEventListener('click', () => {
+      if (passwordInputEl.value === PASSWORD) {
+        dataUnlocked = true;
+        passwordErrorEl.textContent = '';
+        showMessage('Datenansicht freigeschaltet.');
+      } else {
+        passwordErrorEl.textContent = 'Passwort falsch.';
+      }
+      renderDataVisibility();
+    });
+    document.getElementById('hide-data-btn').addEventListener('click', () => {
+      dataUnlocked = false;
+      passwordInputEl.value = '';
+      passwordErrorEl.textContent = '';
+      renderDataVisibility();
+    });
+    document.getElementById('copy-excel-btn').addEventListener('click', copyTableForExcel);
+    document.getElementById('export-csv-btn').addEventListener('click', exportCsv);
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    (async function init() {
+      loadEvents();
+      await loadModules();
+      renderAll();
+    })();
+  </script>
 </body>
 </html>
