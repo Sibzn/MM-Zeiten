@@ -274,10 +274,11 @@
         <div class="card">
           <div class="card-subheader" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
             <span>Buchungsjournal</span>
-            <span class="button-row">
-              <button id="copy-excel-btn">Für Excel kopieren</button>
-              <button id="export-csv-btn">CSV exportieren</button>
-            </span>
+           <span class="button-row">
+  <button id="copy-excel-btn">Für Excel kopieren</button>
+  <button id="export-csv-btn">CSV exportieren</button>
+  <button id="delete-data-btn">Daten löschen</button>
+</span>
           </div>
           <div class="card-content">
             <table>
@@ -313,6 +314,15 @@
             </table>
           </div>
         </div>
+        <div class="card">
+  <div class="card-subheader">Daten löschen</div>
+  <div class="card-content">
+    <div class="muted">Zum Löschen aller lokal gespeicherten Buchungen bitte das Löschpasswort eingeben.</div>
+    <input id="delete-password-input" type="password" placeholder='Löschpasswort eingeben' />
+    <button id="confirm-delete-btn" class="secondary">Löschung bestätigen</button>
+    <div id="delete-error" class="muted" style="color:#b91c1c;"></div>
+  </div>
+</div>
       </div>
     </div>
   </div>
