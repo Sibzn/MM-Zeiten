@@ -1,0 +1,101 @@
+ModulID;Modulname;Projekt;Baugruppe
+MOD-0001;Grundrahmen links;;Grundaufbau
+MOD-0002;Grundrahmen rechts;;Achssystem
+MOD-0003;Grundplatte vorne;;Peripherie
+MOD-0004;Grundplatte hinten;;Sicherheit
+MOD-0005;Portalträger links;;Elektrik
+MOD-0006;Portalträger rechts;;Handling
+MOD-0007;Quertraverse vorne;;Prüftechnik
+MOD-0008;Quertraverse hinten;;Fördertechnik
+MOD-0009;Linearachse X links;;Grundaufbau
+MOD-0010;Linearachse X rechts;;Achssystem
+MOD-0011;Linearachse Y oben;;Peripherie
+MOD-0012;Linearachse Y unten;;Sicherheit
+MOD-0013;Z-Achse komplett;;Elektrik
+MOD-0014;Hubeinheit 1;;Handling
+MOD-0015;Hubeinheit 2;;Prüftechnik
+MOD-0016;Dreheinheit A;;Fördertechnik
+MOD-0017;Dreheinheit B;;Grundaufbau
+MOD-0018;Greiferstation 1;;Achssystem
+MOD-0019;Greiferstation 2;;Peripherie
+MOD-0020;Greiferstation 3;;Sicherheit
+MOD-0021;Schlitteneinheit 1;;Elektrik
+MOD-0022;Schlitteneinheit 2;;Handling
+MOD-0023;Schlitteneinheit 3;;Prüftechnik
+MOD-0024;Positioniereinheit links;;Fördertechnik
+MOD-0025;Positioniereinheit rechts;;Grundaufbau
+MOD-0026;Werkstückaufnahme A;;Achssystem
+MOD-0027;Werkstückaufnahme B;;Peripherie
+MOD-0028;Werkstückaufnahme C;;Sicherheit
+MOD-0029;Spannvorrichtung 1;;Elektrik
+MOD-0030;Spannvorrichtung 2;;Handling
+MOD-0031;Spannvorrichtung 3;;Prüftechnik
+MOD-0032;Schutztür links;;Fördertechnik
+MOD-0033;Schutztür rechts;;Grundaufbau
+MOD-0034;Schutzzaun vorne;;Achssystem
+MOD-0035;Schutzzaun hinten;;Peripherie
+MOD-0036;Bedienpult;;Sicherheit
+MOD-0037;Schaltschrank;;Elektrik
+MOD-0038;Pneumatikinsel;;Handling
+MOD-0039;Ventilblock;;Prüftechnik
+MOD-0040;Vakuumeinheit;;Fördertechnik
+MOD-0041;Druckluftaufbereitung;;Grundaufbau
+MOD-0042;Kabeltrasse links;;Achssystem
+MOD-0043;Kabeltrasse rechts;;Peripherie
+MOD-0044;Energiekette X;;Sicherheit
+MOD-0045;Energiekette Y;;Elektrik
+MOD-0046;Energiekette Z;;Handling
+MOD-0047;Sensorpaket 1;;Prüftechnik
+MOD-0048;Sensorpaket 2;;Fördertechnik
+MOD-0049;Sensorpaket 3;;Grundaufbau
+MOD-0050;Kameraeinheit 1;;Achssystem
+MOD-0051;Kameraeinheit 2;;Peripherie
+MOD-0052;Beleuchtungseinheit;;Sicherheit
+MOD-0053;Lasereinheit;;Elektrik
+MOD-0054;Markiereinheit;;Handling
+MOD-0055;Prüfstation 1;;Prüftechnik
+MOD-0056;Prüfstation 2;;Fördertechnik
+MOD-0057;Prüfstation 3;;Grundaufbau
+MOD-0058;Montageplatte A;;Achssystem
+MOD-0059;Montageplatte B;;Peripherie
+MOD-0060;Montageplatte C;;Sicherheit
+MOD-0061;Antriebseinheit 1;;Elektrik
+MOD-0062;Antriebseinheit 2;;Handling
+MOD-0063;Antriebseinheit 3;;Prüftechnik
+MOD-0064;Servomotor X;;Fördertechnik
+MOD-0065;Servomotor Y;;Grundaufbau
+MOD-0066;Servomotor Z;;Achssystem
+MOD-0067;Getriebeeinheit 1;;Peripherie
+MOD-0068;Getriebeeinheit 2;;Sicherheit
+MOD-0069;Kupplungseinheit;;Elektrik
+MOD-0070;Bandsystem 1;;Handling
+MOD-0071;Bandsystem 2;;Prüftechnik
+MOD-0072;Pufferstation;;Fördertechnik
+MOD-0073;Ausschleusstation;;Grundaufbau
+MOD-0074;Zuführsystem 1;;Achssystem
+MOD-0075;Zuführsystem 2;;Peripherie
+MOD-0076;Zuführsystem 3;;Sicherheit
+MOD-0077;Verschraubmodul 1;;Elektrik
+MOD-0078;Verschraubmodul 2;;Handling
+MOD-0079;Pressmodul;;Prüftechnik
+MOD-0080;Heizeinheit;;Fördertechnik
+MOD-0081;Kühleinheit;;Grundaufbau
+MOD-0082;Dosiermodul;;Achssystem
+MOD-0083;Klebeeinheit;;Peripherie
+MOD-0084;Etikettiermodul;;Sicherheit
+MOD-0085;Palettenhubtisch;;Elektrik
+MOD-0086;Hub-Schwenk-Einheit;;Handling
+MOD-0087;Übergabestation;;Prüftechnik
+MOD-0088;Sammelbehälter;;Fördertechnik
+MOD-0089;Abfallmodul;;Grundaufbau
+MOD-0090;Wartungsbühne;;Achssystem
+MOD-0091;Leiterrahmen;;Peripherie
+MOD-0092;Anschlagmodul;;Sicherheit
+MOD-0093;Ausrichtmodul;;Elektrik
+MOD-0094;Rollenbahn links;;Handling
+MOD-0095;Rollenbahn rechts;;Prüftechnik
+MOD-0096;Pufferrollenbahn;;Fördertechnik
+MOD-0097;Bypassmodul;;Grundaufbau
+MOD-0098;Sicherheitsrelaisgruppe;;Achssystem
+MOD-0099;USV-Modul;;Peripherie
+MOD-0100;Netzteilgruppe;;Sicherheit

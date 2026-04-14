@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Montagezeiten Pilot</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0f172a">
+  <style>
+    :root{--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--pri:#0f766e;--pri2:#0f172a;--red:#b91c1c;}
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:980px;margin:0 auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:960px){.grid{grid-template-columns:380px 1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    h1,h2{margin:0 0 12px 0} h1{font-size:24px} h2{font-size:18px}
+    .sub{font-size:14px;color:var(--muted);line-height:1.4}
+    .btn{appearance:none;border:1px solid transparent;background:var(--pri);color:#fff;border-radius:12px;padding:12px 14px;font-weight:600;cursor:pointer}
+    .btn.secondary{background:#475569}.btn.outline{background:#fff;color:var(--text);border-color:var(--line)}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .grow{flex:1}
+    #reader{width:100%;overflow:hidden;border-radius:12px;background:#000}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;font-size:12px}
+    .status{padding:10px 12px;border-radius:12px;background:#f1f5f9;font-size:14px}
+    .status.error{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+    .actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+    .field{display:flex;flex-direction:column;gap:8px}
+    input[type=password]{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:14px}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+    .hidden{display:none}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h1>Montagezeiten Pilot</h1>
+        <div class="sub">Module werden aus <span class="mono">module.csv</span> geladen. In der Datei reicht eine Spalte mit Modul-IDs. QR-Code scannen, dann Start / Pause / Ende buchen.</div>
+        <div style="height:12px"></div>
+        <div id="moduleStatus" class="status">Module werden geladen …</div>
+        <div style="height:12px"></div>
+        <div class="row">
+          <button id="startScanBtn" class="btn grow">Kamera starten / QR-Code scannen</button>
+          <button id="stopScanBtn" class="btn secondary hidden grow">Kamera stoppen</button>
+          <button id="resetBtn" class="btn outline">Reset</button>
+        </div>
+        <div style="height:12px"></div>
+        <div id="reader" class="hidden"></div>
+        <div style="height:12px"></div>
+        <div id="message" class="status">Bereit.</div>
+        <div id="cameraError" class="status error hidden"></div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Datenansicht</h2>
+        <div class="field">
+          <input id="pw" type="password" placeholder="Passwort eingeben" />
+          <button id="showDataBtn" class="btn outline">Daten anzeigen</button>
+          <button id="hideDataBtn" class="btn outline hidden">Daten verbergen</button>
+          <div id="pwError" class="sub" style="color:#b91c1c"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Erkanntes Modul</h2>
+        <div id="selectedBox" class="sub">Noch kein Modul gescannt.</div>
+        <div id="actionButtons" class="actions"></div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Aktive Module</h2>
+        <div id="activeModules" class="sub">Aktuell kein Modul offen.</div>
+      </div>
+    </div>
+
+    <div>
+      <div id="dataHiddenCard" class="card">
+        <h2>Daten sind verborgen</h2>
+        <div class="sub">Buchungsjournal und Auswertung werden erst nach korrekter Passworteingabe angezeigt.</div>
+      </div>
+
+      <div id="dataArea" class="hidden">
+        <div class="card">
+          <div class="row" style="justify-content:space-between;align-items:center">
+            <h2>Buchungsjournal</h2>
+            <div class="row">
+              <button id="copyBtn" class="btn outline">Für Excel kopieren</button>
+              <button id="csvBtn" class="btn outline">CSV exportieren</button>
+            </div>
+          </div>
+          <div style="overflow:auto">
+            <table>
+              <thead><tr><th>ID</th><th>Zeit</th><th>Modul</th><th>Aktion</th></tr></thead>
+              <tbody id="journalBody"><tr><td colspan="4" class="sub">Noch keine Buchungen vorhanden.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h2>Auswertung je Modul</h2>
+          <div style="overflow:auto">
+            <table>
+              <thead><tr><th>Modul</th><th>Projekt</th><th>Gesamtzeit</th></tr></thead>
+              <tbody id="totalsBody"><tr><td colspan="3" class="sub">Noch keine auswertbaren Intervalle vorhanden.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode" defer></script>
+<script>
+const PASSWORD = "PRM-WSA";
+let modules = [];
+let selectedModule = null;
+let scanner = null;
+let events = [];
+try { events = JSON.parse(localStorage.getItem('montagezeiten-events') || '[]'); } catch(e) {}
+
+const els = {
+  moduleStatus: document.getElementById('moduleStatus'),
+  startScanBtn: document.getElementById('startScanBtn'),
+  stopScanBtn: document.getElementById('stopScanBtn'),
+  resetBtn: document.getElementById('resetBtn'),
+  message: document.getElementById('message'),
+  cameraError: document.getElementById('cameraError'),
+  reader: document.getElementById('reader'),
+  pw: document.getElementById('pw'),
+  pwError: document.getElementById('pwError'),
+  showDataBtn: document.getElementById('showDataBtn'),
+  hideDataBtn: document.getElementById('hideDataBtn'),
+  dataArea: document.getElementById('dataArea'),
+  dataHiddenCard: document.getElementById('dataHiddenCard'),
+  selectedBox: document.getElementById('selectedBox'),
+  actionButtons: document.getElementById('actionButtons'),
+  activeModules: document.getElementById('activeModules'),
+  journalBody: document.getElementById('journalBody'),
+  totalsBody: document.getElementById('totalsBody'),
+  copyBtn: document.getElementById('copyBtn'),
+  csvBtn: document.getElementById('csvBtn')
+};
+
+function saveEvents(){ localStorage.setItem('montagezeiten-events', JSON.stringify(events)); }
+function setMessage(msg){ els.message.textContent = msg; }
+function setError(msg){ els.cameraError.textContent = msg; els.cameraError.classList.toggle('hidden', !msg); }
+function formatDate(iso){ return new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date(iso)); }
+function allowedActions(last){ if(!last) return ['Start']; if(last==='Start') return ['Pause','Ende']; return ['Start']; }
+function toCsv(rows){
+  const header=['BuchungsID','Zeitstempel','Projekt','ModulID','Modulname','Aktion','Kommentar'];
+  const all=[header,...rows.map(r=>[r.buchungsId,r.zeitstempel,r.projekt,r.modulId,r.modulname,r.aktion,r.kommentar||''])];
+  return all.map(line=>line.map(v=>`"${String(v).replaceAll('"','""')}"`).join(';')).join('\n');
+}
+function toTsv(rows){
+  const header=['BuchungsID','Zeitstempel','Projekt','ModulID','Modulname','Aktion','Kommentar'];
+  const all=[header,...rows.map(r=>[r.buchungsId,r.zeitstempel,r.projekt,r.modulId,r.modulname,r.aktion,r.kommentar||''])];
+  return all.map(line=>line.map(v=>String(v).replaceAll('\t',' ')).join('\t')).join('\n');
+}
+function normalizeModulesFromCsv(text){
+  const rows=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  if(!rows.length) return [];
+  let start=0;
+  if(['modul','modulid','module','modul_id'].includes(rows[0].toLowerCase())) start=1;
+  return rows.slice(start).map(line=>{
+    const parts=line.split(/[;,\t]/).map(x=>x.trim());
+    const modulId=(parts[0]||'').toUpperCase();
+    const modulname=parts[1]||modulId;
+    const projekt=parts[2]||'Pilot_01';
+    return {modulId, modulname, projekt, baugruppe: parts[3]||''};
+  }).filter(x=>x.modulId);
+}
+async function loadModules(){
+  try{
+    const res = await fetch('./module.csv', {cache:'no-store'});
+    if(!res.ok) throw new Error();
+    const text = await res.text();
+    modules = normalizeModulesFromCsv(text);
+    els.moduleStatus.textContent = modules.length + ' Module geladen';
+    els.startScanBtn.disabled = modules.length===0;
+    setMessage(modules.length ? 'Bereit.' : 'Keine Module in module.csv gefunden.');
+  }catch(e){
+    modules = [];
+    els.moduleStatus.textContent = 'module.csv konnte nicht geladen werden';
+    els.startScanBtn.disabled = true;
+    setMessage('Bitte module.csv im Repository ergänzen.');
+  }
+}
+function parseQrPayload(code){
+  const raw = String(code||'').trim();
+  const normalized = raw.toUpperCase();
+  const found = modules.find(m => m.modulId === normalized);
+  if(found) return found;
+  if(raw.includes('|')){
+    const [modulId, modulname='', projekt='Pilot_01', baugruppe=''] = raw.split('|');
+    if(modulId.trim()) return {modulId:modulId.trim().toUpperCase(), modulname:(modulname.trim()||modulId.trim().toUpperCase()), projekt:(projekt.trim()||'Pilot_01'), baugruppe:baugruppe.trim()};
+  }
+  try{
+    const p = JSON.parse(raw);
+    if(p.modulId) return {modulId:String(p.modulId).trim().toUpperCase(), modulname:String(p.modulname||p.modulId).trim(), projekt:String(p.projekt||'Pilot_01').trim(), baugruppe:String(p.baugruppe||'').trim()};
+  }catch(e){}
+  return null;
+}
+function getLastEventForModule(modulId){
+  const arr = events.filter(e => e.modulId === modulId);
+  return arr.length ? arr[arr.length-1] : null;
+}
+function applyCode(code){
+  const mod = parseQrPayload(code);
+  if(!mod){ selectedModule=null; setMessage('QR-Inhalt wurde nicht erkannt.'); render(); return; }
+  selectedModule = mod;
+  setMessage('Modul ' + mod.modulId + ' erkannt.');
+  render();
+}
+async function startScanner(){
+  if(!navigator.mediaDevices?.getUserMedia){ setError('Diese Umgebung unterstützt keinen Kamerazugriff.'); return; }
+  if(typeof Html5Qrcode === 'undefined'){ setError('Scanner-Bibliothek noch nicht geladen. Bitte erneut versuchen.'); return; }
+  try{
+    setError('');
+    if(scanner){ await stopScanner(); }
+    scanner = new Html5Qrcode("reader");
+    els.reader.classList.remove('hidden');
+    await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:220,height:220}}, decodedText => { applyCode(decodedText); stopScanner(); }, _ => {});
+    els.startScanBtn.classList.add('hidden');
+    els.stopScanBtn.classList.remove('hidden');
+    setMessage('Kamera aktiv. Bitte QR-Code vor die Kamera halten.');
+  }catch(e){
+    setError('Kamerazugriff fehlgeschlagen. Bitte Berechtigung prüfen oder HTTPS verwenden.');
+  }
+}
+async function stopScanner(){
+  try{
+    if(scanner){
+      await scanner.stop().catch(()=>{});
+      await scanner.clear().catch(()=>{});
+      scanner = null;
+    }
+  }finally{
+    els.reader.classList.add('hidden');
+    els.stopScanBtn.classList.add('hidden');
+    els.startScanBtn.classList.remove('hidden');
+  }
+}
+function bookAction(aktion){
+  if(!selectedModule) return;
+  events.push({
+    buchungsId: events.length + 1,
+    zeitstempel: new Date().toISOString(),
+    projekt: selectedModule.projekt,
+    modulId: selectedModule.modulId,
+    modulname: selectedModule.modulname,
+    aktion,
+    kommentar:''
+  });
+  saveEvents();
+  setMessage(aktion + ' für ' + selectedModule.modulId + ' gespeichert.');
+  render();
+}
+function renderSelected(){
+  if(!selectedModule){ els.selectedBox.innerHTML='<div class="sub">Noch kein Modul gescannt.</div>'; els.actionButtons.innerHTML=''; return; }
+  const last = getLastEventForModule(selectedModule.modulId);
+  els.selectedBox.innerHTML = `
+    <div><strong>${selectedModule.modulname}</strong></div>
+    <div class="sub">${selectedModule.modulId}</div>
+    <div class="sub">Projekt: ${selectedModule.projekt || '-'}</div>
+    <div class="sub">Baugruppe: ${selectedModule.baugruppe || '-'}</div>
+    <div class="sub">Letzte Aktion: ${last ? last.aktion : 'keine'}</div>
+  `;
+  const actions = allowedActions(last?.aktion);
+  els.actionButtons.innerHTML='';
+  actions.forEach(a=>{
+    const btn=document.createElement('button');
+    btn.className='btn'+(a==='Pause'?' secondary':a==='Ende'?' outline':'');
+    btn.textContent=a;
+    btn.onclick=()=>bookAction(a);
+    els.actionButtons.appendChild(btn);
+  });
+}
+function renderActive(){
+  const map = new Map();
+  events.forEach(e=>map.set(e.modulId,e));
+  const active = [...map.values()].filter(e=>e.aktion==='Start');
+  if(!active.length){ els.activeModules.innerHTML='<div class="sub">Aktuell kein Modul offen.</div>'; return; }
+  els.activeModules.innerHTML = active.map(e=>`<div><strong>${e.modulname}</strong> <span class="sub">(${e.modulId})</span></div>`).join('');
+}
+function renderJournal(){
+  if(!events.length){ els.journalBody.innerHTML='<tr><td colspan="4" class="sub">Noch keine Buchungen vorhanden.</td></tr>'; return; }
+  els.journalBody.innerHTML = events.map(e=>`
+    <tr>
+      <td>${e.buchungsId}</td>
+      <td>${formatDate(e.zeitstempel)}</td>
+      <td><strong>${e.modulname}</strong><div class="sub">${e.modulId}</div></td>
+      <td>${e.aktion}</td>
+    </tr>`).join('');
+}
+function renderTotals(){
+  const grouped={}, openStarts={};
+  events.forEach(e=>{
+    if(!grouped[e.modulId]) grouped[e.modulId]={modulId:e.modulId,modulname:e.modulname,projekt:e.projekt,minuten:0};
+    if(e.aktion==='Start') openStarts[e.modulId]=new Date(e.zeitstempel);
+    else if((e.aktion==='Pause'||e.aktion==='Ende') && openStarts[e.modulId]){
+      grouped[e.modulId].minuten += Math.max(0, Math.round((new Date(e.zeitstempel)-openStarts[e.modulId])/60000));
+      delete openStarts[e.modulId];
+    }
+  });
+  const totals = Object.values(grouped);
+  if(!totals.length){ els.totalsBody.innerHTML='<tr><td colspan="3" class="sub">Noch keine auswertbaren Intervalle vorhanden.</td></tr>'; return; }
+  els.totalsBody.innerHTML = totals.map(t=>`
+    <tr>
+      <td><strong>${t.modulname}</strong><div class="sub">${t.modulId}</div></td>
+      <td>${t.projekt}</td>
+      <td>${t.minuten} min</td>
+    </tr>`).join('');
+}
+function render(){ renderSelected(); renderActive(); renderJournal(); renderTotals(); }
+
+els.startScanBtn.onclick = startScanner;
+els.stopScanBtn.onclick = stopScanner;
+els.resetBtn.onclick = async () => { await stopScanner(); events=[]; selectedModule=null; saveEvents(); localStorage.removeItem('montagezeiten-events'); setMessage('Demo zurückgesetzt.'); render(); };
+els.showDataBtn.onclick = () => {
+  if(els.pw.value === PASSWORD){
+    els.pwError.textContent='';
+    els.dataArea.classList.remove('hidden');
+    els.dataHiddenCard.classList.add('hidden');
+    els.showDataBtn.classList.add('hidden');
+    els.hideDataBtn.classList.remove('hidden');
+    setMessage('Datenansicht freigeschaltet.');
+  } else {
+    els.pwError.textContent='Passwort falsch.';
+  }
+};
+els.hideDataBtn.onclick = () => {
+  els.dataArea.classList.add('hidden');
+  els.dataHiddenCard.classList.remove('hidden');
+  els.showDataBtn.classList.remove('hidden');
+  els.hideDataBtn.classList.add('hidden');
+  els.pw.value=''; els.pwError.textContent='';
+};
+els.copyBtn.onclick = async () => {
+  try{ await navigator.clipboard.writeText(toTsv(events)); setMessage('Tabelle für Excel in die Zwischenablage kopiert.'); }
+  catch(e){ setMessage('Kopieren fehlgeschlagen. Bitte CSV-Export verwenden.'); }
+};
+els.csvBtn.onclick = () => {
+  const blob = new Blob([toCsv(events)], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='montagezeiten_buchungen.csv'; a.click(); URL.revokeObjectURL(url);
+};
+
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{})); }
+loadModules(); render();
+</script>
+</body>
+</html>
