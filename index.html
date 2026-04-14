@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tracking Montagezeiten</title>
+  <title>Tracking Montagezeiten pro MM</title>
   <meta name="theme-color" content="#0f172a" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <style>
@@ -224,10 +224,6 @@
             QR-Code scannen und danach <strong>Start</strong> oder <strong>Ende</strong> klicken.
           </div>
 
-          <div class="info-box">
-            Status Module: <span id="modules-status">wird geladen ...</span>
-          </div>
-
           <div class="button-row">
             <button id="start-camera-btn" class="primary">Kamera starten / QR-Code scannen</button>
             <button id="stop-camera-btn" class="secondary hidden">Kamera stoppen</button>
@@ -235,6 +231,12 @@
           </div>
 
           <div id="qr-reader"></div>
+
+          <div id="selected-module-box" class="info-box">
+            <div class="muted">Noch kein Modul gescannt.</div>
+          </div>
+
+          <div id="selected-actions" class="button-row"></div>
 
           <div class="card" style="box-shadow:none;">
             <div class="card-content">
@@ -253,13 +255,6 @@
 
           <div id="camera-error" class="error-box hidden"></div>
           <div id="message-box" class="message-box hidden"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-subheader">Erkanntes Modul</div>
-        <div class="card-content" id="selected-module-box">
-          <div class="muted">Noch kein Modul gescannt.</div>
         </div>
       </div>
 
@@ -340,11 +335,11 @@
     let scannerBusy = false;
     let dataUnlocked = false;
 
-    const modulesStatusEl = document.getElementById('modules-status');
     const messageBoxEl = document.getElementById('message-box');
     const cameraErrorEl = document.getElementById('camera-error');
     const qrReaderEl = document.getElementById('qr-reader');
     const selectedModuleBoxEl = document.getElementById('selected-module-box');
+    const selectedActionsEl = document.getElementById('selected-actions');
     const activeModuleBoxEl = document.getElementById('active-module-box');
     const journalBodyEl = document.getElementById('journal-body');
     const summaryBodyEl = document.getElementById('summary-body');
@@ -444,11 +439,9 @@
         if (!response.ok) throw new Error('module.csv nicht gefunden');
         const text = await response.text();
         modules = normalizeModulesFromCsv(text);
-        modulesStatusEl.textContent = `${modules.length} geladen`;
         showMessage(modules.length ? `${modules.length} Module geladen.` : 'Keine Module in module.csv gefunden.');
-      } catch (error) {
+      } catch {
         modules = [];
-        modulesStatusEl.textContent = 'Fehler beim Laden';
         showMessage('module.csv konnte nicht geladen werden.');
       }
     }
@@ -608,7 +601,7 @@
         startCameraBtnEl.classList.add('hidden');
         stopCameraBtnEl.classList.remove('hidden');
         showMessage('Kamera aktiv. Bitte QR-Code vor die Kamera halten.');
-      } catch (error) {
+      } catch {
         scannerInstance = null;
         scannerActive = false;
         qrReaderEl.classList.remove('active');
@@ -684,6 +677,7 @@
     function renderSelectedModule() {
       if (!selectedModule) {
         selectedModuleBoxEl.innerHTML = '<div class="muted">Noch kein Modul gescannt.</div>';
+        selectedActionsEl.innerHTML = '';
         return;
       }
 
@@ -701,16 +695,16 @@
           Letzte Aktion:
           ${lastEvent ? `<span class="badge ${lastEvent.aktion === 'Start' ? 'start' : 'ende'}">${escapeHtml(lastEvent.aktion)}</span>` : 'keine'}
         </div>
-        <div class="button-row" id="selected-actions"></div>
       `;
 
-      const actionsEl = document.getElementById('selected-actions');
+      selectedActionsEl.innerHTML = '';
+
       if (allowedActions.includes('Start')) {
         const btn = document.createElement('button');
         btn.className = 'primary';
         btn.textContent = 'Start';
         btn.onclick = () => bookSelectedAction('Start');
-        actionsEl.appendChild(btn);
+        selectedActionsEl.appendChild(btn);
       }
 
       if (allowedActions.includes('Ende')) {
@@ -718,7 +712,7 @@
         btn.className = 'secondary';
         btn.textContent = 'Ende';
         btn.onclick = () => bookSelectedAction('Ende');
-        actionsEl.appendChild(btn);
+        selectedActionsEl.appendChild(btn);
       }
     }
 
