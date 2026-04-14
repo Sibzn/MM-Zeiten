@@ -1,6 +1,6 @@
 {
-  "name": "Montagezeiten Pilot",
-  "short_name": "Montagezeiten",
+  "name": "Zeiterfassung MM",
+  "short_name": "Zeiterfassung",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f8fafc",
