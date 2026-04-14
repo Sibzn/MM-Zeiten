@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Erfassung Montagezeiten </title>
+  <title>Erfassung Montagezeiten</title>
   <meta name="theme-color" content="#0f172a" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <style>
@@ -252,33 +252,33 @@
     </div>
 
     <div class="col">
-     <div id="data-hidden-card" class="card">
-  <div class="card-subheader">Daten sind verborgen</div>
-  <div class="card-content">
-    <div class="muted">Die Buchungen und die Auswertung werden erst nach korrekter Passworteingabe angezeigt.</div>
+      <div id="data-hidden-card" class="card">
+        <div class="card-subheader">Daten sind verborgen</div>
+        <div class="card-content">
+          <div class="muted">Die Buchungen und die Auswertung werden erst nach korrekter Passworteingabe angezeigt.</div>
 
-    <div id="data-lock-section" style="margin-top: 8px;">
-      <input id="password-input" type="password" placeholder="Passwort eingeben" />
-      <button id="show-data-btn" class="primary" style="width:100%; margin-top:10px;">Daten anzeigen</button>
-      <div id="password-error" class="muted" style="color:#b91c1c; margin-top:8px;"></div>
-    </div>
+          <div id="data-lock-section" style="margin-top: 8px;">
+            <input id="password-input" type="password" placeholder="Passwort eingeben" />
+            <button id="show-data-btn" class="primary" style="width:100%; margin-top:10px;">Daten anzeigen</button>
+            <div id="password-error" class="muted" style="color:#b91c1c; margin-top:8px;"></div>
+          </div>
 
-    <div id="data-unlock-section" class="hidden" style="margin-top: 8px;">
-      <div class="muted">Datenansicht ist freigeschaltet.</div>
-      <button id="hide-data-btn" style="margin-top:10px;">Daten verbergen</button>
-    </div>
-  </div>
-</div>
+          <div id="data-unlock-section" class="hidden" style="margin-top: 8px;">
+            <div class="muted">Datenansicht ist freigeschaltet.</div>
+            <button id="hide-data-btn" style="margin-top:10px;">Daten verbergen</button>
+          </div>
+        </div>
+      </div>
 
       <div id="data-visible-section" class="hidden">
         <div class="card">
           <div class="card-subheader" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
             <span>Buchungsjournal</span>
-           <span class="button-row">
-  <button id="copy-excel-btn">Für Excel kopieren</button>
-  <button id="export-csv-btn">CSV exportieren</button>
-  <button id="delete-data-btn">Daten löschen</button>
-</span>
+            <span class="button-row">
+              <button id="copy-excel-btn">Für Excel kopieren</button>
+              <button id="export-csv-btn">CSV exportieren</button>
+              <button id="delete-data-btn">Daten löschen</button>
+            </span>
           </div>
           <div class="card-content">
             <table>
@@ -314,15 +314,16 @@
             </table>
           </div>
         </div>
+
         <div class="card">
-  <div class="card-subheader">Daten löschen</div>
-  <div class="card-content">
-    <div class="muted">Zum Löschen aller lokal gespeicherten Buchungen bitte das Löschpasswort eingeben.</div>
-    <input id="delete-password-input" type="password" placeholder='Löschpasswort eingeben' />
-    <button id="confirm-delete-btn" class="secondary">Löschung bestätigen</button>
-    <div id="delete-error" class="muted" style="color:#b91c1c;"></div>
-  </div>
-</div>
+          <div class="card-subheader">Daten löschen</div>
+          <div class="card-content">
+            <div class="muted">Zum Löschen aller lokal gespeicherten Buchungen bitte das Löschpasswort eingeben.</div>
+            <input id="delete-password-input" type="password" placeholder="Löschpasswort eingeben" />
+            <button id="confirm-delete-btn" class="secondary">Löschung bestätigen</button>
+            <div id="delete-error" class="muted" style="color:#b91c1c;"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -330,6 +331,7 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script>
     const PASSWORD = 'PRM-WSA';
+    const DELETE_PASSWORD = 'Felix';
     const MODULE_CSV_PATH = './module.csv';
     const STORAGE_KEY_EVENTS = 'montagezeiten-events';
 
@@ -357,6 +359,9 @@
     const dataUnlockSectionEl = document.getElementById('data-unlock-section');
     const startCameraBtnEl = document.getElementById('start-camera-btn');
     const stopCameraBtnEl = document.getElementById('stop-camera-btn');
+    const deletePasswordInputEl = document.getElementById('delete-password-input');
+    const deleteErrorEl = document.getElementById('delete-error');
+    const deleteDataBtnEl = document.getElementById('delete-data-btn');
 
     function showMessage(text) {
       if (!text) {
@@ -421,19 +426,30 @@
 
       let startIndex = 0;
       const first = rows[0].toLowerCase();
-      if (['modul', 'modulid', 'module', 'modul_id'].includes(first)) {
+      if (
+        first.includes('modulid') ||
+        first.includes('modulname') ||
+        first.includes('projekt') ||
+        first.includes('baugruppe')
+      ) {
         startIndex = 1;
       }
 
       return rows
         .slice(startIndex)
         .map(line => {
-          const modulId = line.split(/[;,\t]/)[0].trim().toUpperCase();
+          const parts = line.split(';').map(v => v.trim());
+
+          const modulId = (parts[0] || '').toUpperCase();
+          const modulname = parts[1] || modulId;
+          const projekt = parts[2] || '';
+          const baugruppe = parts[3] || '';
+
           return modulId ? {
             modulId,
-            modulname: modulId,
-            projekt: 'Pilot_01',
-            baugruppe: ''
+            modulname,
+            projekt,
+            baugruppe
           } : null;
         })
         .filter(Boolean);
@@ -482,12 +498,12 @@
       if (fromModules) return fromModules;
 
       if (raw.includes('|')) {
-        const [modulId, modulname = '', projekt = 'Pilot_01', baugruppe = ''] = raw.split('|');
+        const [modulId, modulname = '', projekt = '', baugruppe = ''] = raw.split('|');
         if (modulId && modulId.trim()) {
           return {
             modulId: modulId.trim().toUpperCase(),
             modulname: modulname.trim() || modulId.trim().toUpperCase(),
-            projekt: projekt.trim() || 'Pilot_01',
+            projekt: projekt.trim() || '',
             baugruppe: baugruppe.trim() || ''
           };
         }
@@ -499,7 +515,7 @@
           return {
             modulId: String(parsed.modulId).trim().toUpperCase(),
             modulname: String(parsed.modulname ?? parsed.modulId).trim(),
-            projekt: String(parsed.projekt ?? 'Pilot_01').trim(),
+            projekt: String(parsed.projekt ?? '').trim(),
             baugruppe: String(parsed.baugruppe ?? '').trim()
           };
         }
@@ -512,7 +528,7 @@
       const row = {
         buchungsId: events.length + 1,
         zeitstempel: new Date().toISOString(),
-        projekt: modul.projekt || 'Pilot_01',
+        projekt: modul.projekt || '',
         modulId: modul.modulId,
         modulname: modul.modulname || modul.modulId,
         aktion: action,
@@ -680,6 +696,21 @@
       }
     }
 
+    function deleteAllData() {
+      if (deletePasswordInputEl.value !== DELETE_PASSWORD) {
+        deleteErrorEl.textContent = 'Löschpasswort falsch.';
+        return;
+      }
+
+      events = [];
+      selectedModule = null;
+      deletePasswordInputEl.value = '';
+      deleteErrorEl.textContent = '';
+      localStorage.removeItem(STORAGE_KEY_EVENTS);
+      showMessage('Alle lokal gespeicherten Daten wurden gelöscht.');
+      renderAll();
+    }
+
     function renderSelectedModule() {
       if (!selectedModule) {
         selectedModuleBoxEl.innerHTML = '<div class="muted">Noch kein Modul gescannt.</div>';
@@ -695,7 +726,7 @@
           <div class="value">${escapeHtml(selectedModule.modulname)}</div>
           <div class="muted">${escapeHtml(selectedModule.modulId)}</div>
         </div>
-        <div class="muted">Projekt: ${escapeHtml(selectedModule.projekt || 'Pilot_01')}</div>
+        <div class="muted">Projekt: ${escapeHtml(selectedModule.projekt || '-')}</div>
         <div class="muted">Baugruppe: ${escapeHtml(selectedModule.baugruppe || '-')}</div>
         <div class="muted">
           Letzte Aktion:
@@ -794,7 +825,7 @@
             <div>${escapeHtml(r.modulname)}</div>
             <div class="muted">${escapeHtml(r.modulId)}</div>
           </td>
-          <td>${escapeHtml(r.projekt)}</td>
+          <td>${escapeHtml(r.projekt || '-')}</td>
           <td>${r.minuten} min</td>
         </tr>
       `).join('');
@@ -822,6 +853,8 @@
       dataUnlocked = false;
       passwordInputEl.value = '';
       passwordErrorEl.textContent = '';
+      deletePasswordInputEl.value = '';
+      deleteErrorEl.textContent = '';
       localStorage.removeItem(STORAGE_KEY_EVENTS);
       showMessage('Demo zurückgesetzt.');
       renderAll();
@@ -830,6 +863,7 @@
     document.getElementById('start-camera-btn').addEventListener('click', startScanner);
     document.getElementById('stop-camera-btn').addEventListener('click', stopScanner);
     document.getElementById('reset-btn').addEventListener('click', resetAll);
+
     document.getElementById('show-data-btn').addEventListener('click', () => {
       if (passwordInputEl.value === PASSWORD) {
         dataUnlocked = true;
@@ -840,14 +874,22 @@
       }
       renderDataVisibility();
     });
+
     document.getElementById('hide-data-btn').addEventListener('click', () => {
       dataUnlocked = false;
       passwordInputEl.value = '';
       passwordErrorEl.textContent = '';
       renderDataVisibility();
     });
+
     document.getElementById('copy-excel-btn').addEventListener('click', copyTableForExcel);
     document.getElementById('export-csv-btn').addEventListener('click', exportCsv);
+
+    deleteDataBtnEl.addEventListener('click', () => {
+      deletePasswordInputEl.focus();
+    });
+
+    document.getElementById('confirm-delete-btn').addEventListener('click', deleteAllData);
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
