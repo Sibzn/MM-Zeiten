@@ -238,21 +238,6 @@
 
           <div id="selected-actions" class="button-row"></div>
 
-          <div class="card" style="box-shadow:none;">
-            <div class="card-content">
-              <div class="label" style="font-weight:700; color:#0f172a;">Datenansicht</div>
-              <div id="data-lock-section">
-                <input id="password-input" type="password" placeholder="Passwort eingeben" />
-                <button id="show-data-btn" class="primary" style="width:100%;">Daten anzeigen</button>
-                <div id="password-error" class="muted" style="color:#b91c1c;"></div>
-              </div>
-              <div id="data-unlock-section" class="hidden">
-                <div class="muted">Datenansicht ist freigeschaltet.</div>
-                <button id="hide-data-btn">Daten verbergen</button>
-              </div>
-            </div>
-          </div>
-
           <div id="camera-error" class="error-box hidden"></div>
           <div id="message-box" class="message-box hidden"></div>
         </div>
@@ -267,12 +252,23 @@
     </div>
 
     <div class="col">
-      <div id="data-hidden-card" class="card">
-        <div class="card-subheader">Daten sind verborgen</div>
-        <div class="card-content">
-          <div class="muted">Die Buchungen und die Auswertung werden erst nach korrekter Passworteingabe angezeigt.</div>
-        </div>
-      </div>
+     <div id="data-hidden-card" class="card">
+  <div class="card-subheader">Daten sind verborgen</div>
+  <div class="card-content">
+    <div class="muted">Die Buchungen und die Auswertung werden erst nach korrekter Passworteingabe angezeigt.</div>
+
+    <div id="data-lock-section" style="margin-top: 8px;">
+      <input id="password-input" type="password" placeholder="Passwort eingeben" />
+      <button id="show-data-btn" class="primary" style="width:100%; margin-top:10px;">Daten anzeigen</button>
+      <div id="password-error" class="muted" style="color:#b91c1c; margin-top:8px;"></div>
+    </div>
+
+    <div id="data-unlock-section" class="hidden" style="margin-top: 8px;">
+      <div class="muted">Datenansicht ist freigeschaltet.</div>
+      <button id="hide-data-btn" style="margin-top:10px;">Daten verbergen</button>
+    </div>
+  </div>
+</div>
 
       <div id="data-visible-section" class="hidden">
         <div class="card">
