@@ -424,32 +424,37 @@
 
       if (!rows.length) return [];
 
-      let startIndex = 0;
-      const first = rows[0].toLowerCase();
-      if (
-        first.includes('modulid') ||
-        first.includes('modulname') ||
-        first.includes('projekt') ||
-        first.includes('baugruppe')
-      ) {
-        startIndex = 1;
-      }
+      const headers = rows[0].split(';').map(h => h.trim().toLowerCase());
+
+      const indexMap = {
+        modulId: headers.findIndex(h => h === 'modulid'),
+        modulname: headers.findIndex(h => h === 'modulname'),
+        projekt: headers.findIndex(h => h === 'projekt'),
+        qrInhalt: headers.findIndex(h => h === 'qr_inhalt' || h === 'qrinhalt' || h === 'qr-inhalt')
+      };
 
       return rows
-        .slice(startIndex)
+        .slice(1)
         .map(line => {
           const parts = line.split(';').map(v => v.trim());
 
-          const modulId = (parts[0] || '').toUpperCase();
-          const modulname = parts[1] || modulId;
-          const projekt = parts[2] || '';
-          const baugruppe = parts[3] || '';
+          const modulId =
+            indexMap.modulId >= 0 ? (parts[indexMap.modulId] || '').toUpperCase() : '';
+
+          const modulname =
+            indexMap.modulname >= 0 ? (parts[indexMap.modulname] || modulId) : modulId;
+
+          const projekt =
+            indexMap.projekt >= 0 ? (parts[indexMap.projekt] || '') : '';
+
+          const qrInhalt =
+            indexMap.qrInhalt >= 0 ? (parts[indexMap.qrInhalt] || '') : '';
 
           return modulId ? {
             modulId,
             modulname,
             projekt,
-            baugruppe
+            qrInhalt
           } : null;
         })
         .filter(Boolean);
@@ -494,17 +499,20 @@
       const raw = code.trim();
       const normalized = raw.toUpperCase();
 
-      const fromModules = modules.find(m => m.modulId === normalized);
+      const fromModules = modules.find(m =>
+        m.modulId === normalized ||
+        (m.qrInhalt && m.qrInhalt.trim().toUpperCase() === normalized)
+      );
       if (fromModules) return fromModules;
 
       if (raw.includes('|')) {
-        const [modulId, modulname = '', projekt = '', baugruppe = ''] = raw.split('|');
+        const [modulId, modulname = '', projekt = ''] = raw.split('|');
         if (modulId && modulId.trim()) {
           return {
             modulId: modulId.trim().toUpperCase(),
             modulname: modulname.trim() || modulId.trim().toUpperCase(),
             projekt: projekt.trim() || '',
-            baugruppe: baugruppe.trim() || ''
+            qrInhalt: raw.trim()
           };
         }
       }
@@ -516,7 +524,7 @@
             modulId: String(parsed.modulId).trim().toUpperCase(),
             modulname: String(parsed.modulname ?? parsed.modulId).trim(),
             projekt: String(parsed.projekt ?? '').trim(),
-            baugruppe: String(parsed.baugruppe ?? '').trim()
+            qrInhalt: String(parsed.qrInhalt ?? raw).trim()
           };
         }
       } catch {}
@@ -560,8 +568,7 @@
         addEvent({
           modulId: activeEvent.modulId,
           modulname: activeEvent.modulname,
-          projekt: activeEvent.projekt,
-          baugruppe: ''
+          projekt: activeEvent.projekt
         }, 'Ende', true);
         showMessage(`Vorher aktives Modul ${activeEvent.modulId} wurde automatisch beendet. Neues Modul ${mod.modulId} erkannt.`);
       } else {
@@ -727,7 +734,6 @@
           <div class="muted">${escapeHtml(selectedModule.modulId)}</div>
         </div>
         <div class="muted">Projekt: ${escapeHtml(selectedModule.projekt || '-')}</div>
-        <div class="muted">Baugruppe: ${escapeHtml(selectedModule.baugruppe || '-')}</div>
         <div class="muted">
           Letzte Aktion:
           ${lastEvent ? `<span class="badge ${lastEvent.aktion === 'Start' ? 'start' : 'ende'}">${escapeHtml(lastEvent.aktion)}</span>` : 'keine'}
