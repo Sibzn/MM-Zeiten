@@ -1,101 +1,101 @@
-ModulID;Modulname;Projekt;Baugruppe
-MOD-0001;Grundrahmen links;;Grundaufbau
-MOD-0002;Grundrahmen rechts;;Achssystem
-MOD-0003;Grundplatte vorne;;Peripherie
-MOD-0004;Grundplatte hinten;;Sicherheit
-MOD-0005;Portalträger links;;Elektrik
-MOD-0006;Portalträger rechts;;Handling
-MOD-0007;Quertraverse vorne;;Prüftechnik
-MOD-0008;Quertraverse hinten;;Fördertechnik
-MOD-0009;Linearachse X links;;Grundaufbau
-MOD-0010;Linearachse X rechts;;Achssystem
-MOD-0011;Linearachse Y oben;;Peripherie
-MOD-0012;Linearachse Y unten;;Sicherheit
-MOD-0013;Z-Achse komplett;;Elektrik
-MOD-0014;Hubeinheit 1;;Handling
-MOD-0015;Hubeinheit 2;;Prüftechnik
-MOD-0016;Dreheinheit A;;Fördertechnik
-MOD-0017;Dreheinheit B;;Grundaufbau
-MOD-0018;Greiferstation 1;;Achssystem
-MOD-0019;Greiferstation 2;;Peripherie
-MOD-0020;Greiferstation 3;;Sicherheit
-MOD-0021;Schlitteneinheit 1;;Elektrik
-MOD-0022;Schlitteneinheit 2;;Handling
-MOD-0023;Schlitteneinheit 3;;Prüftechnik
-MOD-0024;Positioniereinheit links;;Fördertechnik
-MOD-0025;Positioniereinheit rechts;;Grundaufbau
-MOD-0026;Werkstückaufnahme A;;Achssystem
-MOD-0027;Werkstückaufnahme B;;Peripherie
-MOD-0028;Werkstückaufnahme C;;Sicherheit
-MOD-0029;Spannvorrichtung 1;;Elektrik
-MOD-0030;Spannvorrichtung 2;;Handling
-MOD-0031;Spannvorrichtung 3;;Prüftechnik
-MOD-0032;Schutztür links;;Fördertechnik
-MOD-0033;Schutztür rechts;;Grundaufbau
-MOD-0034;Schutzzaun vorne;;Achssystem
-MOD-0035;Schutzzaun hinten;;Peripherie
-MOD-0036;Bedienpult;;Sicherheit
-MOD-0037;Schaltschrank;;Elektrik
-MOD-0038;Pneumatikinsel;;Handling
-MOD-0039;Ventilblock;;Prüftechnik
-MOD-0040;Vakuumeinheit;;Fördertechnik
-MOD-0041;Druckluftaufbereitung;;Grundaufbau
-MOD-0042;Kabeltrasse links;;Achssystem
-MOD-0043;Kabeltrasse rechts;;Peripherie
-MOD-0044;Energiekette X;;Sicherheit
-MOD-0045;Energiekette Y;;Elektrik
-MOD-0046;Energiekette Z;;Handling
-MOD-0047;Sensorpaket 1;;Prüftechnik
-MOD-0048;Sensorpaket 2;;Fördertechnik
-MOD-0049;Sensorpaket 3;;Grundaufbau
-MOD-0050;Kameraeinheit 1;;Achssystem
-MOD-0051;Kameraeinheit 2;;Peripherie
-MOD-0052;Beleuchtungseinheit;;Sicherheit
-MOD-0053;Lasereinheit;;Elektrik
-MOD-0054;Markiereinheit;;Handling
-MOD-0055;Prüfstation 1;;Prüftechnik
-MOD-0056;Prüfstation 2;;Fördertechnik
-MOD-0057;Prüfstation 3;;Grundaufbau
-MOD-0058;Montageplatte A;;Achssystem
-MOD-0059;Montageplatte B;;Peripherie
-MOD-0060;Montageplatte C;;Sicherheit
-MOD-0061;Antriebseinheit 1;;Elektrik
-MOD-0062;Antriebseinheit 2;;Handling
-MOD-0063;Antriebseinheit 3;;Prüftechnik
-MOD-0064;Servomotor X;;Fördertechnik
-MOD-0065;Servomotor Y;;Grundaufbau
-MOD-0066;Servomotor Z;;Achssystem
-MOD-0067;Getriebeeinheit 1;;Peripherie
-MOD-0068;Getriebeeinheit 2;;Sicherheit
-MOD-0069;Kupplungseinheit;;Elektrik
-MOD-0070;Bandsystem 1;;Handling
-MOD-0071;Bandsystem 2;;Prüftechnik
-MOD-0072;Pufferstation;;Fördertechnik
-MOD-0073;Ausschleusstation;;Grundaufbau
-MOD-0074;Zuführsystem 1;;Achssystem
-MOD-0075;Zuführsystem 2;;Peripherie
-MOD-0076;Zuführsystem 3;;Sicherheit
-MOD-0077;Verschraubmodul 1;;Elektrik
-MOD-0078;Verschraubmodul 2;;Handling
-MOD-0079;Pressmodul;;Prüftechnik
-MOD-0080;Heizeinheit;;Fördertechnik
-MOD-0081;Kühleinheit;;Grundaufbau
-MOD-0082;Dosiermodul;;Achssystem
-MOD-0083;Klebeeinheit;;Peripherie
-MOD-0084;Etikettiermodul;;Sicherheit
-MOD-0085;Palettenhubtisch;;Elektrik
-MOD-0086;Hub-Schwenk-Einheit;;Handling
-MOD-0087;Übergabestation;;Prüftechnik
-MOD-0088;Sammelbehälter;;Fördertechnik
-MOD-0089;Abfallmodul;;Grundaufbau
-MOD-0090;Wartungsbühne;;Achssystem
-MOD-0091;Leiterrahmen;;Peripherie
-MOD-0092;Anschlagmodul;;Sicherheit
-MOD-0093;Ausrichtmodul;;Elektrik
-MOD-0094;Rollenbahn links;;Handling
-MOD-0095;Rollenbahn rechts;;Prüftechnik
-MOD-0096;Pufferrollenbahn;;Fördertechnik
-MOD-0097;Bypassmodul;;Grundaufbau
-MOD-0098;Sicherheitsrelaisgruppe;;Achssystem
-MOD-0099;USV-Modul;;Peripherie
-MOD-0100;Netzteilgruppe;;Sicherheit
+ModulID;Modulname;Projekt;QR_Inhalt
+MM0000009703-03;Grundgestell;;MM0000009703-03
+MM0000012390-01;Tischplatte;;MM0000012390-01
+MM0000007764-01;Füße;;MM0000007764-01
+MM0000010944-01;Leitungsführungen intern;;MM0000010944-01
+MM0000003628-01;Verkleidung;;MM0000003628-01
+MM0000004784-03;Eckwinkel;;MM0000004784-03
+MM0000008246-01;Potentialausgleich 1;;MM0000008246-01
+MM0000005467-00;Haupteinspeisung;;MM0000005467-00
+MM0000008474-00;Steuerstrom;;MM0000008474-00
+MM0000008497-00;DC Antriebe;;MM0000008497-00
+MM0000005421-03;Einspeisung 1;;MM0000005421-03
+MM0000005436-02;Grundgestell;;MM0000005436-02
+MM0000006482-00;Energieverteilung;;MM0000006482-00
+MM0000006484-01;Beleuchtung;;MM0000006484-01
+MM0000006475-00;Kühlung;;MM0000006475-00
+MM0000005435-01;Grungestell;;MM0000005435-01
+MM0000006483-00;Energieverteilung;;MM0000006483-00
+MM0000007040-00;Beleuchtung;;MM0000007040-00
+MM0000006485-00;Kühlung;;MM0000006485-00
+MM0000005441-01;Ventilinsel 1;;MM0000005441-01
+MM0000007073-00;Sensor/Aktor Hub 1;;MM0000007073-00
+MM0000004855-03;Halterung;;MM0000004855-03
+MM0000014781-01;Bedienterminal;;MM0000014781-01
+MM0000001241-00;Optisches Signal;;MM0000001241-00
+MM0000008560-00;PC;;MM0000008560-00
+MM0000005443-02;Meldeeinrichtung;;MM0000005443-02
+MM0000008561-00;Grundeinheit;;MM0000008561-00
+MM0000005424-02;Not-Halt 2;;MM0000005424-02
+MM0000005427-00;Zustimmungsschalter 1;;MM0000005427-00
+MM0000007070-00;DC Achsverstärker 1;;MM0000007070-00
+MM0000008528-00;Nockensteuerung 1;;MM0000008528-00
+MM0000008529-00;Peripherie 1;;MM0000008529-00
+MM0000013923-00;SPS;;MM0000013923-00
+MM0000008527-00;Netzwerk 1;;MM0000008527-00
+MM0000012070-00;Objektdatenhandling;;MM0000012070-00
+MM0000007077-00;Schnittstelle;;MM0000007077-00
+MM0000014082-00;Kundennetzwerk;;MM0000014082-00
+MM0000014081-00;Fernzugriff;;MM0000014081-00
+MM0000008534-00;Netzwerk 1;;MM0000008534-00
+MM0000008535-00;AC Achsverstärker 1;;MM0000008535-00
+MM0000008533-00;SPS;;MM0000008533-00
+MM0000008564-00;OVD- Backup;;MM0000008564-00
+MM0000012074-00;Sicherheitsübersicht;;MM0000012074-00
+MM0000008652-00;Sicherheitsschaltgerät;;MM0000008652-00
+MM0000008654-01;Peripherie 1;;MM0000008654-01
+MM0000014089-00;Not-Halt-Kreis 1;;MM0000014089-00
+MM0000008656-00;Sicherheitsstromkreis 1;;MM0000008656-00
+MM0000012430-00;Steckverbindung 1;;MM0000012430-00
+MM0000014085-00;Steckverbindung 2;;MM0000014085-00
+MM0000012425-00;Steckverbindung 4;;MM0000012425-00
+MM0000012428-00;Steckverbindung 3;;MM0000012428-00
+MM0000012812-00;Zentrale Funktionen;;MM0000012812-00
+MM0000013902-00;PC;;MM0000013902-00
+MM0000013904-00;OMNIA Basic;;MM0000013904-00
+MM0000012815-00;Zentrale Funktionen;;MM0000012815-00
+MM0000005428-06;Einlaufband;;MM0000005428-06
+MM0000009522-02;Einschiebeeinheit;;MM0000009522-02
+MM0000005429-00;Niveauerfassung;;MM0000005429-00
+MM0000005665-05;Grundeinheit;;MM0000005665-05
+MM0000005669-02;Antriebseinheit;;MM0000005669-02
+MM0000004045-04;Rad 1;;MM0000004045-04
+MM0000004824-03;Objekterkennung;;MM0000004824-03
+MM0000004047-03;Bodenfuehrung;;MM0000004047-03
+MM0000006768-02;Rad 1;;MM0000006768-02
+MM0000004067-06;Rad 2;;MM0000004067-06
+MM0000009019-02;Rad 3;;MM0000009019-02
+MM0000010101-02;Objekterkennung Auslauf 1;;MM0000010101-02
+MM0000010102-02;Objekterkennung Auslauf 2;;MM0000010102-02
+MM0000004071-02;Bodenfuehrung;;MM0000004071-02
+MM0000012816-00;Zentrale Funktionen;;MM0000012816-00
+MM0000004184-02;Grundeinheit;;MM0000004184-02
+MM0000004183-01;Niveauerfassung;;MM0000004183-01
+MM0000012818-00;Zentrale Funktionen;;MM0000012818-00
+MM0000003178-03;Grundeinheit;;MM0000003178-03
+MM0000005011-01;Zusatzbedieneinheit;;MM0000005011-01
+MM0000007594-01;Etikettenrollenaufnahme;;MM0000007594-01
+MM0000004786-01;Abwickler;;MM0000004786-01
+MM0000004845-02;Pendel Aufwickler;;MM0000004845-02
+MM0000004787-02;Aufwickler;;MM0000004787-02
+MM0000004721-00;Niveauerfassung Etikettenrolle;;MM0000004721-00
+MM0000004721-00;Niveauerfassung Etikettenrolle;;MM0000004721-00
+MM0000009059-02;Hoehenvestellung;;MM0000009059-02
+MM0000004850-01;Grundeinheit;;MM0000004850-01
+MM0000004851-01;Pendel;;MM0000004851-01
+MM0000005641-03;Etikettenerkennung;;MM0000005641-03
+MM0000003984-06;Grundeinheit;;MM0000003984-06
+MM0000005647-04;Etikettenerkennung;;MM0000005647-04
+MM0000005808-03;Grundeinheit;;MM0000005808-03
+MM0000004920-03;Entnahmeeinheit;;MM0000004920-03
+MM0000004841-01;Etikettenerkennung;;MM0000004841-01
+MM0000007170-00;Niveauerfassung;;MM0000007170-00
+MM0000008556-00;Grundeinheit;;MM0000008556-00
+MM0000002711-00;Grundeinheit;;MM0000002711-00
+MM0000004803-02;Niveauerfassung;;MM0000004803-02
+MM0000002711-00;Grundeinheit;;MM0000002711-00
+MM0000004803-02;Niveauerfassung;;MM0000004803-02
+MM0000012819-00;Zentrale Funktionen;;MM0000012819-00
+MM0000012813-00;Zentrale Funktionen;;MM0000012813-00
+MM0000010003-04;Grundeinheit;;MM0000010003-04
+
