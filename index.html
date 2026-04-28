@@ -24,6 +24,7 @@
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -151,11 +152,6 @@
 
     #qr-reader.active {
       display: block;
-    }
-
-    .label {
-      font-size: 14px;
-      color: var(--muted);
     }
 
     .value {
@@ -318,7 +314,7 @@
         <div class="card">
           <div class="card-subheader">Daten löschen</div>
           <div class="card-content">
-            <div class="muted">Zum Löschen aller lokal gespeicherten Buchungen bitte das Löschpasswort eingeben.</div>
+            <div class="muted">Zum Löschen der aktuell in der App sichtbaren Sitzung bitte das Löschpasswort eingeben.</div>
             <input id="delete-password-input" type="password" placeholder="Löschpasswort eingeben" />
             <button id="confirm-delete-btn" class="secondary">Löschung bestätigen</button>
             <div id="delete-error" class="muted" style="color:#b91c1c;"></div>
@@ -333,7 +329,7 @@
     const PASSWORD = 'PRM-WSA';
     const DELETE_PASSWORD = 'Felix';
     const MODULE_CSV_PATH = './module.csv';
-    const STORAGE_KEY_EVENTS = 'montagezeiten-events';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMEiLVVksAPIxUU1P5n1GtZyPYoTTaMI5nPdNxEojQUVCusU6WDz93k5QK_zSuLW50/exec';
 
     let modules = [];
     let events = [];
@@ -403,17 +399,28 @@
         .replaceAll("'", '&#039;');
     }
 
-    function loadEvents() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY_EVENTS);
-        events = raw ? JSON.parse(raw) : [];
-      } catch {
-        events = [];
-      }
-    }
+    async function syncEventToSheet(row) {
+      const payload = {
+        zeitstempel: row.zeitstempel,
+        mmBezeichnung: row.modulname,
+        mmId: row.modulId,
+        aktion: row.aktion
+      };
 
-    function saveEvents() {
-      localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(events));
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(payload)
+        });
+        return true;
+      } catch (error) {
+        console.error('Fehler beim Schreiben ins Google Sheet:', error);
+        return false;
+      }
     }
 
     function normalizeModulesFromCsv(text) {
@@ -532,7 +539,7 @@
       return null;
     }
 
-    function addEvent(modul, action, auto = false) {
+    async function addEvent(modul, action, auto = false) {
       const row = {
         buchungsId: events.length + 1,
         zeitstempel: new Date().toISOString(),
@@ -540,15 +547,20 @@
         modulId: modul.modulId,
         modulname: modul.modulname || modul.modulId,
         aktion: action,
-        kommentar: auto ? 'Automatisch beendet durch Scan eines anderen Moduls' : ''
+        kommentar: auto ? 'Automatisch beendet durch Start eines anderen Moduls' : ''
       };
 
       events.push(row);
-      saveEvents();
+
+      const ok = await syncEventToSheet(row);
+      if (!ok) {
+        showCameraError('Die Daten konnten nicht an Google Sheets übertragen werden.');
+      }
+
       return row;
     }
 
-    function applyCode(code) {
+    async function applyCode(code) {
       const normalized = code.trim().toUpperCase();
       if (!normalized) {
         showMessage('Bitte einen QR-Code scannen.');
@@ -563,19 +575,8 @@
         return;
       }
 
-      const activeEvent = getActiveModuleEvent();
-      if (activeEvent && activeEvent.modulId !== mod.modulId) {
-        addEvent({
-          modulId: activeEvent.modulId,
-          modulname: activeEvent.modulname,
-          projekt: activeEvent.projekt
-        }, 'Ende', true);
-        showMessage(`Vorher aktives Modul ${activeEvent.modulId} wurde automatisch beendet. Neues Modul ${mod.modulId} erkannt.`);
-      } else {
-        showMessage(`Modul ${mod.modulId} erkannt.`);
-      }
-
       selectedModule = mod;
+      showMessage(`Modul ${mod.modulId} erkannt.`);
       renderAll();
     }
 
@@ -620,7 +621,7 @@
           { facingMode: 'environment' },
           { fps: 10, qrbox: { width: 220, height: 220 } },
           async (decodedText) => {
-            applyCode(decodedText);
+            await applyCode(decodedText);
             await stopScanner();
           },
           () => {}
@@ -640,10 +641,30 @@
       }
     }
 
-    function bookSelectedAction(action) {
+    async function bookSelectedAction(action) {
       if (!selectedModule) return;
-      addEvent(selectedModule, action, false);
-      showMessage(`${action} für ${selectedModule.modulId} gespeichert.`);
+
+      if (action === 'Start') {
+        const activeEvent = getActiveModuleEvent();
+
+        if (activeEvent && activeEvent.modulId !== selectedModule.modulId) {
+          showMessage('Das Tracking der Zeiten für das aktuell aktive MM wird beendet.');
+          await addEvent({
+            modulId: activeEvent.modulId,
+            modulname: activeEvent.modulname,
+            projekt: activeEvent.projekt
+          }, 'Ende', true);
+        }
+
+        await addEvent(selectedModule, 'Start', false);
+        showMessage(`Start für ${selectedModule.modulId} gespeichert.`);
+      }
+
+      if (action === 'Ende') {
+        await addEvent(selectedModule, 'Ende', false);
+        showMessage(`Ende für ${selectedModule.modulId} gespeichert.`);
+      }
+
       renderAll();
     }
 
@@ -713,8 +734,7 @@
       selectedModule = null;
       deletePasswordInputEl.value = '';
       deleteErrorEl.textContent = '';
-      localStorage.removeItem(STORAGE_KEY_EVENTS);
-      showMessage('Alle lokal gespeicherten Daten wurden gelöscht.');
+      showMessage('Die aktuell in der App sichtbaren Daten wurden gelöscht.');
       renderAll();
     }
 
@@ -746,7 +766,7 @@
         const btn = document.createElement('button');
         btn.className = 'primary';
         btn.textContent = 'Start';
-        btn.onclick = () => bookSelectedAction('Start');
+        btn.onclick = async () => await bookSelectedAction('Start');
         selectedActionsEl.appendChild(btn);
       }
 
@@ -754,7 +774,7 @@
         const btn = document.createElement('button');
         btn.className = 'secondary';
         btn.textContent = 'Ende';
-        btn.onclick = () => bookSelectedAction('Ende');
+        btn.onclick = async () => await bookSelectedAction('Ende');
         selectedActionsEl.appendChild(btn);
       }
     }
@@ -861,8 +881,7 @@
       passwordErrorEl.textContent = '';
       deletePasswordInputEl.value = '';
       deleteErrorEl.textContent = '';
-      localStorage.removeItem(STORAGE_KEY_EVENTS);
-      showMessage('Demo zurückgesetzt.');
+      showMessage('Ansicht zurückgesetzt.');
       renderAll();
     }
 
@@ -904,7 +923,6 @@
     }
 
     (async function init() {
-      loadEvents();
       await loadModules();
       renderAll();
     })();
